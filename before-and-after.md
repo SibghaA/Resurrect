@@ -20,6 +20,9 @@ The AI without a CLAUDE.md made different choices:
 
 chose Vite + JSX over Next.js + TypeScript. No server, no database, no Zod. Authentication is entirely simulated in localStorage.
 
+I had Claude scan both attempts for security issues and it found this issue in the folder without Claude.mdL
+
+"""
 Critical security gap: Passwords are stored and compared in plaintext:
 // AuthContext.jsx:52
 if (!found || found.password !== password) {
@@ -27,8 +30,9 @@ if (!found || found.password !== password) {
 This is a direct consequence of having no server — but it's still a real vulnerability if this pattern were ever promoted to production.
 
 No input validation layer — each component does its own ad hoc checks (if (form.password.length < 6)), and the minimum is 6 characters vs. the 8 set in Resurrect's Zod schema.
+"""
 
-CSS approach differs: Resurrect (no claude.md) uses a 427-line hand-crafted index.css with CSS custom properties.
+CSS approach also differs: Resurrect (no claude.md) uses a 427-line hand-crafted index.css with CSS custom properties.
 
 Resurrect's globals.css is 3 lines (@tailwind directives only). The CLAUDE.md rule — "Tailwind utility classes only — no custom CSS files except globals.css" — is respected by Resurrect and ignored by Resurrect (no claude.md).
 
