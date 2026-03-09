@@ -10,7 +10,7 @@ export default function ProjectForm() {
   const [description, setDescription] = useState('')
   const [domain, setDomain] = useState('')
   const [effortRemaining, setEffortRemaining] = useState('')
-  const [status, setStatus] = useState<string>('In Progress')
+  const [status, setStatus] = useState<string>('Active')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
