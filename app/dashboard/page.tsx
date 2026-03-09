@@ -97,6 +97,13 @@ export default async function DashboardPage() {
             <span className="text-sm font-medium text-gray-900">{user.flakeRate.toFixed(1)}%</span>
           </div>
         </div>
+
+        <Link
+          href="/vault"
+          className="block w-full text-center bg-indigo-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-indigo-700 transition-colors mt-6"
+        >
+          My Vault
+        </Link>
       </div>
     </div>
   )
