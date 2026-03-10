@@ -2,6 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getSession } from '@/lib/auth/session'
 import { getProjectById } from '@/lib/db/project'
+import { getActiveListingByProjectId } from '@/lib/db/coop-listing'
 import { format } from 'date-fns'
 import StatusManager, { statusBadgeColor } from '@/components/StatusManager'
 import ContextSnapshot from '@/components/ContextSnapshot'
@@ -23,6 +24,8 @@ export default async function ProjectDetailPage({
 
   const project = await getProjectById(params.id, session.sub)
   if (!project) notFound()
+
+  const activeListing = await getActiveListingByProjectId(params.id)
 
   let snapshot: ContextSnapshotData = { currentState: '', blockers: '', nextSteps: '' }
   try {
@@ -58,6 +61,24 @@ export default async function ProjectDetailPage({
           <div className="flex gap-4 mt-4 text-sm text-gray-500">
             <span>Effort remaining: {project.effortRemaining}</span>
             <span>Created {format(new Date(project.createdAt), 'MMM d, yyyy')}</span>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            {activeListing ? (
+              <Link
+                href={`/coop/${activeListing.id}`}
+                className="text-sm text-indigo-600 hover:underline font-medium"
+              >
+                View Co-op listing &rarr;
+              </Link>
+            ) : (
+              <Link
+                href={`/coop/new`}
+                className="text-sm text-indigo-600 hover:underline font-medium"
+              >
+                Post to Co-op Board
+              </Link>
+            )}
           </div>
         </div>
 

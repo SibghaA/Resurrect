@@ -20,22 +20,24 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   projects     Project[]
+  coopListings CoopListing[]
 }
 
 model Project {
-  id              String      @id @default(cuid())
+  id              String       @id @default(cuid())
   title           String
   description     String
   domain          String
   effortRemaining String
-  status          String      @default("Active")
-  contextSnapshot String      @default("{}")
+  status          String       @default("Active")
+  contextSnapshot String       @default("{}")
   userId          String
-  user            User        @relation(fields: [userId], references: [id])
+  user            User         @relation(fields: [userId], references: [id])
   statusLogs      StatusLog[]
   microTasks      MicroTask[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  coopListing     CoopListing?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }
 
 model MicroTask {
@@ -51,6 +53,25 @@ model MicroTask {
   status           String   @default("pending")
   order            Int
   batchId          String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model CoopListing {
+  id               String   @id @default(cuid())
+  projectId        String   @unique
+  project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  description      String
+  domainTags       String   @default("[]")
+  skillTagsHave    String   @default("[]")
+  skillTagsNeed    String   @default("[]")
+  timeCommitment   String
+  milestonePreview String
+  status           String   @default("Open")
+  visibility       String   @default("Open to All")
+  active           Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
