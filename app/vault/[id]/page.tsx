@@ -5,6 +5,7 @@ import { getProjectById } from '@/lib/db/project'
 import { format } from 'date-fns'
 import StatusManager, { statusBadgeColor } from '@/components/StatusManager'
 import ContextSnapshot from '@/components/ContextSnapshot'
+import MicroTaskEngine from '@/components/MicroTaskEngine'
 
 interface ContextSnapshotData {
   currentState?: string
@@ -80,6 +81,15 @@ export default async function ProjectDetailPage({
               nextSteps: snapshot.nextSteps ?? '',
             }}
           />
+        </div>
+
+        {/* Micro-Task Engine */}
+        <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">Micro-Task Engine</h2>
+          <p className="text-sm text-gray-500 mb-4">
+            Break a milestone into ~10-minute tasks so you can make progress right now.
+          </p>
+          <MicroTaskEngine projectId={project.id} />
         </div>
 
         {/* Status History */}
