@@ -1,5 +1,6 @@
 import { prisma } from './prisma'
 import type { ProjectInput, ContextSnapshotInput } from '@/lib/validators/project'
+import { getSession } from '@/lib/auth/session'
 
 export function createProject(userId: string, data: ProjectInput) {
   return prisma.project.create({
@@ -17,15 +18,45 @@ export function getProjectsByUserId(userId: string) {
   })
 }
 
-export function getProjectById(projectId: string, userId: string) {
-  return prisma.project.findFirst({
-    where: { id: projectId, userId },
+export async function getProjectById(projectId: string, userId: string) {
+  // Find project first
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
     include: {
-      statusLogs: {
-        orderBy: { createdAt: 'desc' },
-      },
+      statusLogs: { orderBy: { createdAt: 'desc' } },
+      coopListing: {
+        include: {
+          collaborations: {
+            where: {
+              OR: [{ initiatorId: userId }, { collaboratorId: userId }]
+            }
+          }
+        }
+      }
     },
   })
+
+  if (!project) return null
+
+  const isOwner = project.userId === userId
+  let hasAccess = false
+
+  if (isOwner) {
+    // Owner has access unless they have a Pending Handshake on this project
+    const hasPendingHandshake = project.coopListing?.collaborations.some(
+      (c) => c.status === 'Pending Handshake'
+    )
+    hasAccess = !hasPendingHandshake
+  } else {
+    // Non-owner has access ONLY IF they have an Active (fully signed) collaboration
+    const hasActiveCollab = project.coopListing?.collaborations.some(
+      (c) => c.status === 'Active'
+    )
+    hasAccess = !!hasActiveCollab
+  }
+
+  if (!hasAccess) return null
+  return project
 }
 
 export function updateProjectStatus(

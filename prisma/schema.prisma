@@ -112,7 +112,7 @@ model Collaboration {
   collaboratorId      String
   initiator           User      @relation("InitiatedCollabs", fields: [initiatorId], references: [id])
   collaborator        User      @relation("JoinedCollabs",     fields: [collaboratorId], references: [id])
-  status              String    @default("Active")
+  status              String    @default("Pending Handshake")
   milestoneDeadline   DateTime?
   lastCommunicationAt DateTime?
   exitTriggeredAt     DateTime?
@@ -130,4 +130,30 @@ model CollaborationFlag {
   reason          String
   status          String        @default("Pending")
   createdAt       DateTime      @default(now())
+}
+
+model HandshakeAgreement {
+  id                    String        @id @default(cuid())
+  collaborationId       String        @unique
+  collaboration         Collaboration @relation(fields: [collaborationId], references: [id], onDelete: Cascade)
+  
+  projectDescription    String
+  collaboratorRole      String
+  ipClause              String        // "Creator Retains All" | "Equal Co-ownership" | "Custom"
+  customIpClause        String?
+  creditAgreement       String
+  exitClause            String        @default("48hr notice + handoff doc")
+  confidentiality       String        @default("Standard NDA")
+  milestoneSchedule     String        // Storing as JSON string
+  
+  initiatorSignature    String?       // Legal name typed
+  initiatorSignedAt     DateTime?
+  collaboratorSignature String?       // Legal name typed
+  collaboratorSignedAt  DateTime?
+  
+  pdfS3Key              String?       // To fetch from S3
+  pdfHash               String?       // For integrity verification
+  
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 }
