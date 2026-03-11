@@ -24,6 +24,8 @@ model User {
   updatedAt           DateTime @updatedAt
   projects            Project[]
   coopListings        CoopListing[]
+  initiatedCollabs    Collaboration[] @relation("InitiatedCollabs")
+  joinedCollabs       Collaboration[] @relation("JoinedCollabs")
 }
 
 model Project {
@@ -77,6 +79,7 @@ model CoopListing {
   active           Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  collaborations   Collaboration[]
 }
 
 model StatusLog {
@@ -99,4 +102,32 @@ model AiTaskCache {
   createdAt DateTime @default(now())
 
   @@unique([projectId, cacheKey])
+}
+
+model Collaboration {
+  id                  String    @id @default(cuid())
+  listingId           String
+  listing             CoopListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  initiatorId         String
+  collaboratorId      String
+  initiator           User      @relation("InitiatedCollabs", fields: [initiatorId], references: [id])
+  collaborator        User      @relation("JoinedCollabs",     fields: [collaboratorId], references: [id])
+  status              String    @default("Active")
+  milestoneDeadline   DateTime?
+  lastCommunicationAt DateTime?
+  exitTriggeredAt     DateTime?
+  handoffCompletedAt  DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  flags               CollaborationFlag[]
+}
+
+model CollaborationFlag {
+  id              String        @id @default(cuid())
+  collaborationId String
+  collaboration   Collaboration @relation(fields: [collaborationId], references: [id], onDelete: Cascade)
+  raisedById      String
+  reason          String
+  status          String        @default("Pending")
+  createdAt       DateTime      @default(now())
 }
