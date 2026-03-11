@@ -8,19 +8,22 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  bio          String?
-  skillTags    String   @default("[]")
-  socialLinks  String   @default("{}")
-  flakeRate    Float    @default(0)
-  profileSetup Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  projects     Project[]
-  coopListings CoopListing[]
+  id                  String   @id @default(cuid())
+  email               String   @unique
+  passwordHash        String
+  name                String?
+  bio                 String?
+  skillTags           String   @default("[]")
+  socialLinks         String   @default("{}")
+  flakeRate           Float    @default(0)
+  profileSetup        Boolean  @default(false)
+  tier                String   @default("free")
+  aiCallsThisMonth    Int      @default(0)
+  aiCallsResetAt      DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  projects            Project[]
+  coopListings        CoopListing[]
 }
 
 model Project {
@@ -84,4 +87,16 @@ model StatusLog {
   toStatus   String
   notes      String?
   createdAt  DateTime @default(now())
+}
+
+model AiTaskCache {
+  id        String   @id @default(cuid())
+  projectId String
+  cacheKey  String
+  tasksJson String
+  source    String   @default("ai")
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, cacheKey])
 }

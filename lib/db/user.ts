@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { startOfMonth } from 'date-fns'
 
 export interface ProfileData {
   name: string
@@ -33,4 +34,36 @@ export function updateUserProfile(id: string, data: ProfileData) {
       profileSetup: true,
     },
   })
+}
+
+export async function getUserAiUsage(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { tier: true, aiCallsThisMonth: true, aiCallsResetAt: true },
+  })
+  return user
+}
+
+export async function incrementAiCalls(userId: string): Promise<void> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { aiCallsResetAt: true, aiCallsThisMonth: true },
+  })
+  if (!user) return
+
+  const resetAt = new Date(user.aiCallsResetAt)
+  const currentMonthStart = startOfMonth(new Date())
+
+  if (resetAt < currentMonthStart) {
+    // New month — reset counter before incrementing
+    await prisma.user.update({
+      where: { id: userId },
+      data: { aiCallsThisMonth: 1, aiCallsResetAt: new Date() },
+    })
+  } else {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { aiCallsThisMonth: { increment: 1 } },
+    })
+  }
 }

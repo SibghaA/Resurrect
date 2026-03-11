@@ -18,6 +18,12 @@ interface MicroTask {
   order: number
 }
 
+interface AiUsage {
+  usedThisMonth: number
+  limit: number | null
+  isProTier: boolean
+}
+
 const CATEGORY_COLORS: Record<string, string> = {
   setup: 'bg-purple-100 text-purple-800',
   code: 'bg-blue-100 text-blue-800',
@@ -39,10 +45,25 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState('')
   const [editDescription, setEditDescription] = useState('')
+  const [taskSource, setTaskSource] = useState<'ai' | 'template' | 'cache' | null>(null)
+  const [usage, setUsage] = useState<AiUsage | null>(null)
 
   useEffect(() => {
     fetchTasks()
+    fetchUsage()
   }, [projectId])
+
+  async function fetchUsage() {
+    try {
+      const res = await fetch('/api/user/ai-usage')
+      if (res.ok) {
+        const data: AiUsage = await res.json()
+        setUsage(data)
+      }
+    } catch {
+      // non-critical — silently fail
+    }
+  }
 
   async function fetchTasks() {
     try {
@@ -75,13 +96,28 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       })
-      const data: { tasks?: MicroTask[]; error?: string } = await res.json()
+      const data: {
+        tasks?: MicroTask[]
+        error?: string
+        source?: 'ai' | 'template' | 'cache'
+        usedThisMonth?: number
+        limit?: number | null
+        isProTier?: boolean
+      } = await res.json()
+
       if (!res.ok) {
         setError(data.error ?? 'Failed to generate tasks.')
         return
       }
       if (data.tasks) {
         setTasks(data.tasks)
+      }
+      if (data.source) {
+        setTaskSource(data.source)
+      }
+      // Update usage from response so the indicator refreshes without an extra fetch
+      if (data.usedThisMonth !== undefined && data.limit !== undefined && data.isProTier !== undefined) {
+        setUsage({ usedThisMonth: data.usedThisMonth, limit: data.limit, isProTier: data.isProTier })
       }
     } catch {
       setError('Something went wrong. Please try again.')
@@ -149,6 +185,9 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
     return []
   }
 
+  const isAtLimit =
+    usage !== null && !usage.isProTier && usage.limit !== null && usage.usedThisMonth >= usage.limit
+
   if (loading) {
     return (
       <div className="space-y-3">
@@ -197,6 +236,26 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
         >
           {generating ? 'Breaking it down...' : 'Break it down'}
         </button>
+
+        {/* Usage indicator */}
+        {usage !== null && (
+          <div className="mt-1">
+            {usage.isProTier ? (
+              <p className="text-xs text-indigo-600 font-medium">✦ Pro · Unlimited AI tasks</p>
+            ) : isAtLimit ? (
+              <div className="flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
+                <span className="text-amber-500 mt-0.5 shrink-0">⚠</span>
+                <p className="text-xs text-amber-700">
+                  You&apos;ve used all {usage.limit} AI task generations for this month. Template tasks will be used until next month.
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-gray-500">
+                AI tasks: {usage.usedThisMonth} / {usage.limit} this month
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {error && <p className="text-sm text-red-600 mt-3">{error}</p>}
@@ -214,9 +273,21 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
       {!generating && tasks.length > 0 && (
         <div className="mt-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-gray-700">
-              {acceptedCount} of {tasks.length} tasks accepted
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-medium text-gray-700">
+                {acceptedCount} of {tasks.length} tasks accepted
+              </p>
+              {taskSource === 'template' && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
+                  ⚠ Template
+                </span>
+              )}
+              {taskSource === 'cache' && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                  ↩ Cached
+                </span>
+              )}
+            </div>
             <button
               onClick={handleGenerate}
               disabled={generating || !targetMilestone.trim()}
