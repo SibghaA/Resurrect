@@ -113,6 +113,7 @@ model Collaboration {
   initiator           User      @relation("InitiatedCollabs", fields: [initiatorId], references: [id])
   collaborator        User      @relation("JoinedCollabs",     fields: [collaboratorId], references: [id])
   status              String    @default("Pending Handshake")
+  applicationNote     String?
   milestoneDeadline   DateTime?
   lastCommunicationAt DateTime?
   exitTriggeredAt     DateTime?

@@ -1,8 +1,9 @@
-import { redirect, notFound } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getSession } from '@/lib/auth/session'
 import { getCoopListingById } from '@/lib/db/coop-listing'
 import CoopListingActions from '@/components/CoopListingActions'
+import ExpressInterestForm from '@/components/ExpressInterestForm'
 
 const STATUS_COLORS: Record<string, string> = {
   Open: 'bg-green-100 text-green-800',
@@ -17,7 +18,6 @@ export default async function CoopListingDetailPage({
   params: { id: string }
 }) {
   const session = await getSession()
-  if (!session) redirect('/auth/login')
 
   const listing = await getCoopListingById(params.id)
   if (!listing || !listing.active) notFound()
@@ -112,6 +112,24 @@ export default async function CoopListingDetailPage({
           <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-sm font-semibold text-gray-700 mb-4">Manage Listing</h2>
             <CoopListingActions listingId={listing.id} />
+          </div>
+        )}
+
+        {!isOwner && session && (
+          <ExpressInterestForm 
+            listingId={listing.id} 
+            requiresApplication={listing.visibility === 'Application Required'} 
+          />
+        )}
+
+        {!isOwner && !session && (
+          <div className="mt-6 text-center">
+            <Link
+              href="/auth/login"
+              className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-indigo-700 transition"
+            >
+              Log in to Express Interest
+            </Link>
           </div>
         )}
       </div>

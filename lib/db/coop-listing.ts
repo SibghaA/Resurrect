@@ -27,11 +27,14 @@ export function getCoopListingById(id: string) {
   })
 }
 
-export function getActiveCoopListings(filters?: { status?: string; search?: string }) {
+export function getActiveCoopListings(filters?: { status?: string; search?: string; domain?: string; skillNeed?: string; commitment?: string }) {
   return prisma.coopListing.findMany({
     where: {
       active: true,
       ...(filters?.status ? { status: filters.status } : {}),
+      ...(filters?.commitment ? { timeCommitment: filters.commitment } : {}),
+      ...(filters?.domain ? { domainTags: { contains: filters.domain } } : {}),
+      ...(filters?.skillNeed ? { skillTagsNeed: { contains: filters.skillNeed } } : {}),
       ...(filters?.search
         ? {
             OR: [

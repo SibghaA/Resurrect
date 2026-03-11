@@ -10,20 +10,25 @@ import CoopBoardFilters from '@/components/CoopBoardFilters'
 export default async function CoopBoardPage({
   searchParams,
 }: {
-  searchParams: { status?: string; search?: string; feed?: string }
+  searchParams: { status?: string; search?: string; feed?: string; domain?: string; skillNeed?: string; commitment?: string }
 }) {
   const session = await getSession()
-  if (!session) redirect('/auth/login')
-
   const isForYou = searchParams.feed === 'foryou'
+
+  if (isForYou && !session) {
+    redirect('/auth/login')
+  }
 
   let listings: any[] | null = []
   if (isForYou) {
-    listings = await getPersonalizedListings(session.sub)
+    listings = await getPersonalizedListings(session!.sub)
   } else {
     listings = await getActiveCoopListings({
       status: searchParams.status,
       search: searchParams.search,
+      domain: searchParams.domain,
+      skillNeed: searchParams.skillNeed,
+      commitment: searchParams.commitment,
     })
   }
 
