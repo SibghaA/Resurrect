@@ -3,21 +3,29 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { getSession } from '@/lib/auth/session'
 import { getActiveCoopListings } from '@/lib/db/coop-listing'
+import { getPersonalizedListings } from '@/lib/skill-matcher'
 import CoopListingCard from '@/components/CoopListingCard'
 import CoopBoardFilters from '@/components/CoopBoardFilters'
 
 export default async function CoopBoardPage({
   searchParams,
 }: {
-  searchParams: { status?: string; search?: string }
+  searchParams: { status?: string; search?: string; feed?: string }
 }) {
   const session = await getSession()
   if (!session) redirect('/auth/login')
 
-  const listings = await getActiveCoopListings({
-    status: searchParams.status,
-    search: searchParams.search,
-  })
+  const isForYou = searchParams.feed === 'foryou'
+
+  let listings: any[] | null = []
+  if (isForYou) {
+    listings = await getPersonalizedListings(session.sub)
+  } else {
+    listings = await getActiveCoopListings({
+      status: searchParams.status,
+      search: searchParams.search,
+    })
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -39,16 +47,52 @@ export default async function CoopBoardPage({
           Post to Co-op Board
         </Link>
 
-        <Suspense fallback={null}>
-          <div className="mb-6">
-            <CoopBoardFilters />
-          </div>
-        </Suspense>
+        <div className="flex bg-gray-100 p-1 rounded-lg mb-6 w-full max-w-sm mx-auto">
+          <Link
+            href="/coop"
+            className={`flex-1 text-center py-2 rounded-md text-sm font-medium transition-colors ${
+              !isForYou ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            All Projects
+          </Link>
+          <Link
+            href="/coop?feed=foryou"
+            className={`flex-1 text-center py-2 rounded-md text-sm font-medium transition-colors ${
+              isForYou ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            For You
+          </Link>
+        </div>
 
-        {listings.length === 0 ? (
+        {!isForYou && (
+          <Suspense fallback={null}>
+            <div className="mb-6">
+              <CoopBoardFilters />
+            </div>
+          </Suspense>
+        )}
+
+        {listings === null ? (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center flex flex-col items-center">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Complete Your Profile</h3>
+            <p className="text-gray-500 mb-6">
+              Add your skills to see personalized project recommendations matching your expertise.
+            </p>
+            <Link
+              href="/profile/edit"
+              className="bg-indigo-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-indigo-700 transition"
+            >
+              Update Skills
+            </Link>
+          </div>
+        ) : listings.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
             <p className="text-gray-500">
-              {searchParams.status || searchParams.search
+              {isForYou
+                ? 'No projects currently need your exact skills. Try expanding your skill tags!'
+                : searchParams.status || searchParams.search
                 ? 'No listings match your filters.'
                 : 'No listings yet. Be the first to post!'}
             </p>
@@ -56,7 +100,7 @@ export default async function CoopBoardPage({
         ) : (
           <div className="space-y-4">
             {listings.map((listing) => (
-              <CoopListingCard key={listing.id} listing={listing} />
+              <CoopListingCard key={listing.id} listing={listing} matchScore={listing.matchScore} />
             ))}
           </div>
         )}

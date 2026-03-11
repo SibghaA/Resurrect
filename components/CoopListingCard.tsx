@@ -1,3 +1,4 @@
+import React from 'react'
 import Link from 'next/link'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -16,12 +17,12 @@ interface CoopListingCardProps {
     skillTagsNeed: string
     timeCommitment: string
     status: string
-    project: { title: string; domain: string }
     user: { name: string | null; flakeRate: number }
   }
+  matchScore?: number
 }
 
-export default function CoopListingCard({ listing }: CoopListingCardProps) {
+export default function CoopListingCard({ listing, matchScore }: CoopListingCardProps) {
   const domainTags = JSON.parse(listing.domainTags) as string[]
   const skillTagsHave = JSON.parse(listing.skillTagsHave) as string[]
   const skillTagsNeed = JSON.parse(listing.skillTagsNeed) as string[]
@@ -37,9 +38,16 @@ export default function CoopListingCard({ listing }: CoopListingCardProps) {
           <h2 className="text-lg font-semibold text-gray-900">{listing.project.title}</h2>
           <p className="text-sm text-gray-500 mt-0.5">{listing.project.domain}</p>
         </div>
-        <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${statusColor}`}>
-          {listing.status}
-        </span>
+        <div className="flex flex-col items-end gap-2">
+          <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${statusColor}`}>
+            {listing.status}
+          </span>
+          {matchScore && matchScore > 0 && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+              🎯 {matchScore} Skill{matchScore === 1 ? '' : 's'} Match
+            </span>
+          )}
+        </div>
       </div>
 
       <p className="text-sm text-gray-700 mt-3 line-clamp-2">{listing.description}</p>

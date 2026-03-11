@@ -8,6 +8,7 @@ type CollabForRate = {
   lastCommunicationAt: Date | null
   handoffCompletedAt: Date | null
   exitTriggeredAt: Date | null
+  createdAt?: Date
 }
 
 /**
@@ -84,7 +85,7 @@ export async function recalculateAllFlakeRates(): Promise<number> {
     })
     if (users.length === 0) break
 
-    await Promise.all(users.map((u) => recalculateFlakeRateForUser(u.id)))
+    await Promise.all(users.map((u: { id: string }) => recalculateFlakeRateForUser(u.id)))
     total += users.length
     skip += take
     if (users.length < take) break
