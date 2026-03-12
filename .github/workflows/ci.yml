@@ -122,6 +122,7 @@ jobs:
         run: npm run test:integration
         env:
           JWT_SECRET: test-secret-for-ci
+          DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_test
           TEST_DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_test
 
   security:
