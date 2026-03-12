@@ -94,6 +94,14 @@ describe('project DB helpers', () => {
   })
 
   describe('updateProjectStatus', () => {
+    beforeAll(async () => {
+      // Ensure a project exists regardless of prior test execution order
+      if (!projectId) {
+        const project = await createProject(userId, testProjectInput)
+        projectId = project.id
+      }
+    })
+
     it('updates the project status and creates a status log entry', async () => {
       const [updatedProject, statusLog] = await updateProjectStatus(
         projectId,

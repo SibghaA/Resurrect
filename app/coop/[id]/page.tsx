@@ -22,7 +22,7 @@ export default async function CoopListingDetailPage({ params }: { params: { id: 
   const skillTagsHave = JSON.parse(listing.skillTagsHave) as string[]
   const skillTagsNeed = JSON.parse(listing.skillTagsNeed) as string[]
   const statusColor = STATUS_COLORS[listing.status] ?? 'bg-gray-100 text-gray-800'
-  const isOwner = listing.userId === session.sub
+  const isOwner = listing.userId === session?.sub
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">

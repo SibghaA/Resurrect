@@ -106,7 +106,11 @@ export default async function CoopBoardPage({
         ) : (
           <div className="space-y-4">
             {listings.map((listing) => (
-              <CoopListingCard key={listing.id} listing={listing} matchScore={listing.matchScore} />
+              <CoopListingCard
+                key={listing.id}
+                listing={listing}
+                matchScore={'matchScore' in listing ? listing.matchScore : undefined}
+              />
             ))}
           </div>
         )}

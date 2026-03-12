@@ -24,7 +24,7 @@ type HandshakeData = {
     collaboratorId: string
     initiator: { name: string | null; email: string }
     collaborator: { name: string | null; email: string }
-    listing: { project: { title: string } }
+    listing: { project: { id: string; title: string } }
   }
 }
 

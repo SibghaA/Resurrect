@@ -17,6 +17,7 @@ interface CoopListingCardProps {
     skillTagsNeed: string
     timeCommitment: string
     status: string
+    project: { title: string; domain: string }
     user: { name: string | null; flakeRate: number }
   }
   matchScore?: number

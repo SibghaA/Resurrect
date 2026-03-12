@@ -16,7 +16,9 @@ export function getCollaborationById(id: string) {
   return prisma.collaboration.findUnique({
     where: { id },
     include: {
-      listing: { select: { id: true, projectId: true, userId: true } },
+      listing: {
+        select: { id: true, projectId: true, userId: true, description: true, skillTagsNeed: true },
+      },
       flags: true,
     },
   })
