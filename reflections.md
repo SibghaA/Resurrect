@@ -41,3 +41,45 @@ A testing strategy section is also missing. Sprint 1 has no test files. For Spri
 Sprint 2 issues should include a "Definition of Done" field with at least one test case and a design reference. Sprint 1 issues were solid on architecture but thin on design intent — the AI had no mockup context to anchor component shape or interaction patterns. Even a rough wireframe attached to an issue would give it a more concrete implementation target.
 
 It would also be worth adding a `security` label and tagging anything that touches auth, file access, or the Flake Rate calculation. Grouping those issues on the board makes it easier to audit them together rather than finding security-adjacent code scattered across unrelated PRs.
+
+---
+
+# Sprint 2 Reflection — Resurrect
+
+## Sprint 2 Task Completion
+
+### ✅ Key Invariants block added to `CLAUDE.md`
+
+A dedicated `## Key Invariants` section was added above the Product Summary. It codifies six rules the AI must never violate regardless of feature context: server-side file access gating, Handshake-first collaborator access, Flake Rate always visible, session-derived identity only, ownership checks before listing creation, and Zod at every input boundary.
+
+The intent was to make the security model self-documenting and self-enforcing across sessions — the same goal as the 20-line controller rule in Sprint 1, but applied to product-level invariants rather than code structure. The format mirrors the Architecture section: short declarative bullets, one rule per line, no explanation of *why* (that's the PRD's job). The assumption is that a rule the AI can parse in one line is more reliably followed than a paragraph it has to summarise first.
+
+### ✅ Testing strategy section added to `CLAUDE.md`
+
+A `## Testing` section was added specifying the framework (Jest + ts-jest), directory layout (`__tests__/` mirroring source), test pattern (mock Prisma and external services, assert on HTTP responses and DB call arguments), coverage target (≥ 80% statements and lines across `lib/` and `app/api/`), and mandatory coverage points per new route (401, 400, 404, happy path).
+
+In practice, tests were written before this section existed and already exceed the target: 198 tests across 30 suites, 99.08% statement coverage, 100% line coverage, 100% function coverage. The section formalises what was built so future sessions treat tests as a first-class output rather than a follow-up. The framework choice (Jest over Vitest) was driven by ts-jest's simpler CommonJS path-alias story with the existing tsconfig — no additional tooling needed.
+
+### ⚠️ Definition of Done on Sprint 2 GitHub issues — manual action required
+
+This task requires editing GitHub issue descriptions on [github.com/SibghaA/Resurrect](https://github.com/SibghaA/Resurrect). The `gh` CLI was not available in the environment. Each Sprint 2 issue should have a Definition of Done section added with: at least one test case (happy path + one failure mode), and a design reference (wireframe or component sketch). Issues touching the Co-op Board, Handshake flow, and milestone gating are the priority.
+
+### ⚠️ `security` label on GitHub — manual action required
+
+Also requires the `gh` CLI or the GitHub web UI. Create a `security` label (suggested colour: `#d73a4a`) and apply it to any issue touching auth, file access gating, the Flake Rate calculation, or the Handshake Agreement. This makes security-adjacent issues auditable as a group on the board without having to scan PR by PR.
+
+---
+
+## What Changed Between Sprint 1 and Sprint 2
+
+The clearest change is that the rules file now has explicit answers to the two categories of question that Sprint 1 left open: *what are the security guarantees that must hold at all times*, and *what does done look like for any piece of code*.
+
+Sprint 1 produced correct architecture by constraining the AI's structural choices. Sprint 2's additions attempt to do the same for product correctness (Key Invariants) and quality assurance (Testing). The hypothesis is the same: a constraint written once in `CLAUDE.md` produces better output consistently than re-prompting the same rule per session.
+
+The test coverage result supports this. Writing the `## Testing` section before any tests existed would likely have produced 198 tests as initial output rather than as a follow-up task. That's the main lesson to carry into Sprint 3: specification in the rules file before implementation, not after.
+
+## What to Add or Change for Sprint 3
+
+The rules file is still silent on UI behaviour. There is no guidance on component patterns, loading states beyond the one-liner in Code Standards, or how to handle optimistic updates. For Sprint 3 features — particularly anything with real-time collaboration signals or milestone progress — a `## UI Patterns` section covering skeleton conventions, error boundary placement, and the shape of server action responses would prevent the same kind of structural drift the Architecture section prevented in Sprint 1.
+
+The GitHub board should also track test coverage per issue, not just code completion. A simple "tests added: yes/no" checkbox in the Definition of Done would be enough to make coverage a condition of closing an issue rather than something audited separately after the sprint.
