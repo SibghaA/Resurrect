@@ -8,7 +8,9 @@ import { getProjectById, updateContextSnapshot } from '@/lib/db/project'
 
 const mockGetSession = getSession as jest.MockedFunction<typeof getSession>
 const mockGetProjectById = getProjectById as jest.MockedFunction<typeof getProjectById>
-const mockUpdateSnapshot = updateContextSnapshot as jest.MockedFunction<typeof updateContextSnapshot>
+const mockUpdateSnapshot = updateContextSnapshot as jest.MockedFunction<
+  typeof updateContextSnapshot
+>
 
 const session = { sub: 'u1', email: 'user@example.com', profileSetup: true }
 const project = { id: 'p1', userId: 'u1', statusLogs: [] }
@@ -51,7 +53,10 @@ describe('PUT /api/projects/[id]/context', () => {
   it('saves snapshot and returns updated project', async () => {
     const res = await PUT(makeRequest(validSnapshot), { params: { id: 'p1' } })
     expect(res.status).toBe(200)
-    expect(mockUpdateSnapshot).toHaveBeenCalledWith('p1', expect.objectContaining({ currentState: 'In progress' }))
+    expect(mockUpdateSnapshot).toHaveBeenCalledWith(
+      'p1',
+      expect.objectContaining({ currentState: 'In progress' })
+    )
   })
 
   it('accepts empty snapshot (all defaults)', async () => {

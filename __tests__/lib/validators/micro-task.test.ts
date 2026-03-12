@@ -23,11 +23,15 @@ describe('microTaskGenerateSchema', () => {
   })
 
   it('rejects timeAvailability below 10', () => {
-    expect(microTaskGenerateSchema.safeParse({ targetMilestone: 'Auth', timeAvailability: 9 }).success).toBe(false)
+    expect(
+      microTaskGenerateSchema.safeParse({ targetMilestone: 'Auth', timeAvailability: 9 }).success
+    ).toBe(false)
   })
 
   it('rejects timeAvailability above 480', () => {
-    expect(microTaskGenerateSchema.safeParse({ targetMilestone: 'Auth', timeAvailability: 481 }).success).toBe(false)
+    expect(
+      microTaskGenerateSchema.safeParse({ targetMilestone: 'Auth', timeAvailability: 481 }).success
+    ).toBe(false)
   })
 })
 

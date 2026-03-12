@@ -15,7 +15,11 @@ export default async function ProfileEditPage() {
     name: user.name ?? '',
     bio: user.bio ?? '',
     skillTags: JSON.parse(user.skillTags) as string[],
-    socialLinks: JSON.parse(user.socialLinks) as { github?: string; twitter?: string; website?: string },
+    socialLinks: JSON.parse(user.socialLinks) as {
+      github?: string
+      twitter?: string
+      website?: string
+    },
   }
 
   return (
@@ -23,7 +27,10 @@ export default async function ProfileEditPage() {
       <div className="max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Edit profile</h1>
-          <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+          <Link
+            href="/dashboard"
+            className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          >
             ← Dashboard
           </Link>
         </div>

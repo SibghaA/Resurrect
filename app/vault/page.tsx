@@ -26,10 +26,7 @@ export default async function VaultPage() {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-gray-900">My Vault</h1>
-          <Link
-            href="/dashboard"
-            className="text-sm text-indigo-600 hover:underline font-medium"
-          >
+          <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline font-medium">
             Dashboard
           </Link>
         </div>
@@ -55,7 +52,9 @@ export default async function VaultPage() {
               >
                 <div className="flex items-start justify-between">
                   <h2 className="text-lg font-semibold text-gray-900">{project.title}</h2>
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ml-4 ${badgeColor(project.status)}`}>
+                  <span
+                    className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ml-4 ${badgeColor(project.status)}`}
+                  >
                     {project.status}
                   </span>
                 </div>
@@ -66,9 +65,7 @@ export default async function VaultPage() {
                     Created {format(new Date(project.createdAt), 'MMM d, yyyy')}
                   </p>
                   {project.status === 'Paused' && (
-                    <span className="text-xs font-medium text-amber-700">
-                      Waiting for you
-                    </span>
+                    <span className="text-xs font-medium text-amber-700">Waiting for you</span>
                   )}
                 </div>
               </Link>

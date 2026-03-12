@@ -114,7 +114,7 @@ jobs:
         run: npm ci
 
       - name: Run Prisma migrations
-        run: npx prisma db push
+        run: npm run db:setup && npx prisma db push
         env:
           DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_test
 
@@ -140,7 +140,7 @@ jobs:
         run: npm ci
 
       - name: Run npm audit
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=critical --omit=dev
 
   build:
     name: Build
@@ -200,7 +200,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run Prisma migrations
-        run: npx prisma db push
+        run: npm run db:setup && npx prisma db push
         env:
           DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_e2e
 

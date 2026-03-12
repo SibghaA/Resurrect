@@ -50,9 +50,7 @@ export default function ContextSnapshot({ projectId, initialSnapshot }: ContextS
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Where I left off
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Where I left off</label>
         <textarea
           value={currentState}
           onChange={(e) => setCurrentState(e.target.value)}
@@ -64,9 +62,7 @@ export default function ContextSnapshot({ projectId, initialSnapshot }: ContextS
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Blockers
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Blockers</label>
         <textarea
           value={blockers}
           onChange={(e) => setBlockers(e.target.value)}
@@ -78,9 +74,7 @@ export default function ContextSnapshot({ projectId, initialSnapshot }: ContextS
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Next steps
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Next steps</label>
         <textarea
           value={nextSteps}
           onChange={(e) => setNextSteps(e.target.value)}

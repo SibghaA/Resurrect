@@ -96,8 +96,7 @@ export default function ProfileForm({ initialData, isSetup = false }: ProfileFor
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-3">
-          Social links{' '}
-          <span className="text-gray-400 font-normal">(optional)</span>
+          Social links <span className="text-gray-400 font-normal">(optional)</span>
         </label>
         <div className="space-y-3">
           {(

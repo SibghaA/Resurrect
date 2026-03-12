@@ -21,9 +21,10 @@ export default function CoopListingActions({ listingId }: CoopListingActionsProp
       const res = await fetch(`/api/coop-listings/${listingId}/deactivate`, { method: 'PATCH' })
       if (!res.ok) {
         const data: unknown = await res.json()
-        const msg = data && typeof data === 'object' && 'error' in data
-          ? String((data as { error: unknown }).error)
-          : 'Failed to deactivate'
+        const msg =
+          data && typeof data === 'object' && 'error' in data
+            ? String((data as { error: unknown }).error)
+            : 'Failed to deactivate'
         setError(msg)
         return
       }
@@ -41,9 +42,10 @@ export default function CoopListingActions({ listingId }: CoopListingActionsProp
       const res = await fetch(`/api/coop-listings/${listingId}`, { method: 'DELETE' })
       if (!res.ok) {
         const data: unknown = await res.json()
-        const msg = data && typeof data === 'object' && 'error' in data
-          ? String((data as { error: unknown }).error)
-          : 'Failed to delete'
+        const msg =
+          data && typeof data === 'object' && 'error' in data
+            ? String((data as { error: unknown }).error)
+            : 'Failed to delete'
         setError(msg)
         return
       }
@@ -81,7 +83,9 @@ export default function CoopListingActions({ listingId }: CoopListingActionsProp
         </button>
       ) : (
         <div className="border border-red-200 rounded-lg p-3 bg-red-50">
-          <p className="text-sm text-red-700 mb-3">This will permanently remove the listing. Are you sure?</p>
+          <p className="text-sm text-red-700 mb-3">
+            This will permanently remove the listing. Are you sure?
+          </p>
           <div className="flex gap-2">
             <button
               onClick={handleDelete}

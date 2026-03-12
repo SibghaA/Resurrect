@@ -82,7 +82,9 @@ export default function StatusManager({ projectId, currentStatus }: StatusManage
   return (
     <div>
       <div className="flex items-center gap-3 flex-wrap">
-        <span className={`text-sm font-medium px-3 py-1 rounded-full ${statusBadgeColor(currentStatus)}`}>
+        <span
+          className={`text-sm font-medium px-3 py-1 rounded-full ${statusBadgeColor(currentStatus)}`}
+        >
           {currentStatus}
         </span>
 
@@ -121,13 +123,17 @@ export default function StatusManager({ projectId, currentStatus }: StatusManage
                 >
                   <option value="">Select a status</option>
                   {availableStatuses.map((s) => (
-                    <option key={s} value={s}>{s}</option>
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes (optional)
+                </label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -143,7 +149,10 @@ export default function StatusManager({ projectId, currentStatus }: StatusManage
 
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => { setShowModal(false); setError('') }}
+                onClick={() => {
+                  setShowModal(false)
+                  setError('')
+                }}
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
               >
                 Cancel

@@ -13,10 +13,7 @@ export default async function NewCoopListingPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto">
-        <Link
-          href="/coop"
-          className="text-sm text-indigo-600 hover:underline font-medium"
-        >
+        <Link href="/coop" className="text-sm text-indigo-600 hover:underline font-medium">
           &larr; Back to Co-op Board
         </Link>
 

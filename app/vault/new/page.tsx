@@ -7,10 +7,7 @@ export default function NewProjectPage() {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-gray-900">New Project</h1>
-          <Link
-            href="/vault"
-            className="text-sm text-indigo-600 hover:underline font-medium"
-          >
+          <Link href="/vault" className="text-sm text-indigo-600 hover:underline font-medium">
             Back to Vault
           </Link>
         </div>

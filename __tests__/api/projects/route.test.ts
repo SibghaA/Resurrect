@@ -49,7 +49,10 @@ describe('POST /api/projects', () => {
     expect(res.status).toBe(201)
     const data = await res.json()
     expect(data.id).toBe('p1')
-    expect(mockCreateProject).toHaveBeenCalledWith('u1', expect.objectContaining({ title: 'My App' }))
+    expect(mockCreateProject).toHaveBeenCalledWith(
+      'u1',
+      expect.objectContaining({ title: 'My App' })
+    )
   })
 })
 

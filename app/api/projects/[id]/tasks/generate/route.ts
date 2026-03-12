@@ -4,10 +4,7 @@ import { getProjectById } from '@/lib/db/project'
 import { microTaskGenerateSchema } from '@/lib/validators/micro-task'
 import { generateMicroTasks } from '@/lib/ai/micro-task-engine'
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

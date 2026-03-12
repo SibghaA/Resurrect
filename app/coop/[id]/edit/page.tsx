@@ -4,11 +4,7 @@ import { getSession } from '@/lib/auth/session'
 import { getCoopListingById } from '@/lib/db/coop-listing'
 import CoopListingForm from '@/components/CoopListingForm'
 
-export default async function EditCoopListingPage({
-  params,
-}: {
-  params: { id: string }
-}) {
+export default async function EditCoopListingPage({ params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) redirect('/auth/login')
 

@@ -11,21 +11,21 @@ export default async function UserProfilePage({ params }: { params: { id: string
     include: {
       initiatedCollabs: {
         where: { status: 'Pending Handshake' },
-        include: { listing: { include: { project: true } } }
+        include: { listing: { include: { project: true } } },
       },
       joinedCollabs: {
         where: { status: 'Pending Handshake' },
-        include: { listing: { include: { project: true } } }
-      }
-    }
+        include: { listing: { include: { project: true } } },
+      },
+    },
   })
 
   if (!user) notFound()
 
   // Find handshakes involving the logged-in user and this profile user
   const sharedHandshakes = [
-    ...user.initiatedCollabs.filter(c => c.collaboratorId === session?.sub),
-    ...user.joinedCollabs.filter(c => c.initiatorId === session?.sub)
+    ...user.initiatedCollabs.filter((c) => c.collaboratorId === session?.sub),
+    ...user.joinedCollabs.filter((c) => c.initiatorId === session?.sub),
   ]
 
   return (
@@ -46,9 +46,7 @@ export default async function UserProfilePage({ params }: { params: { id: string
           </div>
 
           {user.bio && (
-            <p className="mt-6 text-gray-700 max-w-lg mx-auto leading-relaxed">
-              {user.bio}
-            </p>
+            <p className="mt-6 text-gray-700 max-w-lg mx-auto leading-relaxed">{user.bio}</p>
           )}
 
           {user.skillTags && JSON.parse(user.skillTags).length > 0 && (
@@ -56,7 +54,10 @@ export default async function UserProfilePage({ params }: { params: { id: string
               <h3 className="text-sm font-semibold text-gray-900 mb-3">Skills</h3>
               <div className="flex flex-wrap justify-center gap-2">
                 {JSON.parse(user.skillTags).map((tag: string) => (
-                  <span key={tag} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
+                  >
                     {tag}
                   </span>
                 ))}
@@ -66,23 +67,30 @@ export default async function UserProfilePage({ params }: { params: { id: string
 
           {sharedHandshakes.length > 0 && (
             <div className="mt-8 border-t pt-6 text-left">
-               <h3 className="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wider text-center">Pending Handshakes</h3>
-               <div className="space-y-3">
-                 {sharedHandshakes.map(collab => (
-                    <div key={collab.id} className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-gray-900">{collab.listing.project.title}</p>
-                        <p className="text-xs text-orange-800 mt-1">Both parties must sign before Vault access is granted.</p>
-                      </div>
-                      <Link 
-                        href={`/collaborations/${collab.id}/handshake`}
-                        className="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-700"
-                      >
-                        Review Document
-                      </Link>
+              <h3 className="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wider text-center">
+                Pending Handshakes
+              </h3>
+              <div className="space-y-3">
+                {sharedHandshakes.map((collab) => (
+                  <div
+                    key={collab.id}
+                    className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-900">{collab.listing.project.title}</p>
+                      <p className="text-xs text-orange-800 mt-1">
+                        Both parties must sign before Vault access is granted.
+                      </p>
                     </div>
-                 ))}
-               </div>
+                    <Link
+                      href={`/collaborations/${collab.id}/handshake`}
+                      className="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-700"
+                    >
+                      Review Document
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

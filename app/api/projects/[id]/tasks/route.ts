@@ -3,10 +3,7 @@ import { getSession } from '@/lib/auth/session'
 import { getProjectById } from '@/lib/db/project'
 import { getMicroTasksByProject } from '@/lib/db/micro-task'
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

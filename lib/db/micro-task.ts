@@ -1,11 +1,7 @@
 import { prisma } from './prisma'
 import type { AITask } from '@/lib/validators/micro-task'
 
-export async function createMicroTaskBatch(
-  projectId: string,
-  batchId: string,
-  tasks: AITask[]
-) {
+export async function createMicroTaskBatch(projectId: string, batchId: string, tasks: AITask[]) {
   return prisma.microTask.createMany({
     data: tasks.map((task, index) => ({
       projectId,

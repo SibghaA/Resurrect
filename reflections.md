@@ -12,7 +12,7 @@ Zod coverage was another concrete win. The rule "Zod validates all API inputs �
 
 The CSS rule ("Tailwind utility classes only — no custom CSS files except `globals.css`") produced the most visually obvious difference: `globals.css` in Resurrect is 3 lines of `@tailwind` directives. The no-rules version generated a 427-line hand-crafted stylesheet with CSS custom properties. Neither approach is inherently wrong, but only one stays consistent with the rest of the codebase, and consistency is what keeps AI-assisted iteration coherent across sessions.
 
-Where the rules file fell short was at the *product* layer — the PRD details that don't reduce to a linting rule. Things like the Flake Rate, the Handshake Agreement flow, and the copy policy ("never say abandoned, say paused") needed explicit re-prompting per feature. The architecture landed correctly; the product voice needed more guidance than the current rules file provides.
+Where the rules file fell short was at the _product_ layer — the PRD details that don't reduce to a linting rule. Things like the Flake Rate, the Handshake Agreement flow, and the copy policy ("never say abandoned, say paused") needed explicit re-prompting per feature. The architecture landed correctly; the product voice needed more guidance than the current rules file provides.
 
 ---
 
@@ -52,7 +52,7 @@ It would also be worth adding a `security` label and tagging anything that touch
 
 A dedicated `## Key Invariants` section was added above the Product Summary. It codifies six rules the AI must never violate regardless of feature context: server-side file access gating, Handshake-first collaborator access, Flake Rate always visible, session-derived identity only, ownership checks before listing creation, and Zod at every input boundary.
 
-The intent was to make the security model self-documenting and self-enforcing across sessions — the same goal as the 20-line controller rule in Sprint 1, but applied to product-level invariants rather than code structure. The format mirrors the Architecture section: short declarative bullets, one rule per line, no explanation of *why* (that's the PRD's job). The assumption is that a rule the AI can parse in one line is more reliably followed than a paragraph it has to summarise first.
+The intent was to make the security model self-documenting and self-enforcing across sessions — the same goal as the 20-line controller rule in Sprint 1, but applied to product-level invariants rather than code structure. The format mirrors the Architecture section: short declarative bullets, one rule per line, no explanation of _why_ (that's the PRD's job). The assumption is that a rule the AI can parse in one line is more reliably followed than a paragraph it has to summarise first.
 
 ### ✅ Testing strategy section added to `CLAUDE.md`
 
@@ -72,7 +72,7 @@ Also requires the `gh` CLI or the GitHub web UI. Create a `security` label (sugg
 
 ## What Changed Between Sprint 1 and Sprint 2
 
-The clearest change is that the rules file now has explicit answers to the two categories of question that Sprint 1 left open: *what are the security guarantees that must hold at all times*, and *what does done look like for any piece of code*.
+The clearest change is that the rules file now has explicit answers to the two categories of question that Sprint 1 left open: _what are the security guarantees that must hold at all times_, and _what does done look like for any piece of code_.
 
 Sprint 1 produced correct architecture by constraining the AI's structural choices. Sprint 2's additions attempt to do the same for product correctness (Key Invariants) and quality assurance (Testing). The hypothesis is the same: a constraint written once in `CLAUDE.md` produces better output consistently than re-prompting the same rule per session.
 

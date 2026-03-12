@@ -39,11 +39,15 @@ describe('coopListingSchema', () => {
   })
 
   it('rejects more than 10 domainTags', () => {
-    expect(coopListingSchema.safeParse({ ...valid, domainTags: Array(11).fill('tag') }).success).toBe(false)
+    expect(
+      coopListingSchema.safeParse({ ...valid, domainTags: Array(11).fill('tag') }).success
+    ).toBe(false)
   })
 
   it('rejects more than 20 skillTagsHave', () => {
-    expect(coopListingSchema.safeParse({ ...valid, skillTagsHave: Array(21).fill('tag') }).success).toBe(false)
+    expect(
+      coopListingSchema.safeParse({ ...valid, skillTagsHave: Array(21).fill('tag') }).success
+    ).toBe(false)
   })
 
   it('rejects invalid visibility', () => {

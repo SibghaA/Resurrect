@@ -38,6 +38,8 @@ describe('generateCompletion', () => {
     mockCreate.mockResolvedValue({
       content: [{ type: 'tool_use', id: 'x', name: 'foo', input: {} }],
     })
-    await expect(generateCompletion('sys', 'usr')).rejects.toThrow('Unexpected response type from AI')
+    await expect(generateCompletion('sys', 'usr')).rejects.toThrow(
+      'Unexpected response type from AI'
+    )
   })
 })

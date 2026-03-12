@@ -82,7 +82,11 @@ describe('PATCH /api/coop-listings/[id]', () => {
   })
 
   it('returns 403 when not the owner', async () => {
-    mockGetSession.mockResolvedValue({ sub: 'other-user', email: 'x@x.com', profileSetup: true } as never)
+    mockGetSession.mockResolvedValue({
+      sub: 'other-user',
+      email: 'x@x.com',
+      profileSetup: true,
+    } as never)
     const res = await PATCH(makePatchRequest({ description: 'Updated' }), { params: { id: 'l1' } })
     expect(res.status).toBe(403)
   })
@@ -121,7 +125,11 @@ describe('DELETE /api/coop-listings/[id]', () => {
   })
 
   it('returns 403 when not the owner', async () => {
-    mockGetSession.mockResolvedValue({ sub: 'other', email: 'x@x.com', profileSetup: true } as never)
+    mockGetSession.mockResolvedValue({
+      sub: 'other',
+      email: 'x@x.com',
+      profileSetup: true,
+    } as never)
     const res = await DELETE(makeDeleteRequest(), { params: { id: 'l1' } })
     expect(res.status).toBe(403)
   })

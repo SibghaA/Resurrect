@@ -1,11 +1,18 @@
 import { z } from 'zod'
 
 export const COOP_LISTING_STATUSES = ['Open', 'In Discussion', 'Filled', 'Complete'] as const
-export const COOP_LISTING_VISIBILITIES = ['Open to All', 'Invite-Only', 'Application Required'] as const
+export const COOP_LISTING_VISIBILITIES = [
+  'Open to All',
+  'Invite-Only',
+  'Application Required',
+] as const
 
 export const coopListingSchema = z.object({
   projectId: z.string().min(1, 'Project is required'),
-  description: z.string().min(1, 'Description is required').max(280, 'Description must be 280 characters or less'),
+  description: z
+    .string()
+    .min(1, 'Description is required')
+    .max(280, 'Description must be 280 characters or less'),
   domainTags: z.array(z.string().min(1).max(50)).max(10).default([]),
   skillTagsHave: z.array(z.string().min(1).max(50)).max(20).default([]),
   skillTagsNeed: z.array(z.string().min(1).max(50)).max(20).default([]),

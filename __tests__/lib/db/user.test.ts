@@ -17,7 +17,9 @@ describe('createUser', () => {
   it('calls prisma.user.create with email and passwordHash', async () => {
     mockUser.create.mockResolvedValue({ id: 'u1', email: 'a@b.com' } as never)
     await createUser('a@b.com', 'hashed')
-    expect(mockUser.create).toHaveBeenCalledWith({ data: { email: 'a@b.com', passwordHash: 'hashed' } })
+    expect(mockUser.create).toHaveBeenCalledWith({
+      data: { email: 'a@b.com', passwordHash: 'hashed' },
+    })
   })
 })
 
