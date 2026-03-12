@@ -26,7 +26,11 @@ interface CoopListingFormProps {
   }
 }
 
-export default function CoopListingForm({ projects, listingId, initialValues }: CoopListingFormProps) {
+export default function CoopListingForm({
+  projects,
+  listingId,
+  initialValues,
+}: CoopListingFormProps) {
   const router = useRouter()
   const isEdit = Boolean(listingId)
 
@@ -68,21 +72,19 @@ export default function CoopListingForm({ projects, listingId, initialValues }: 
         visibility,
       }
 
-      const res = await fetch(
-        isEdit ? `/api/coop-listings/${listingId}` : '/api/coop-listings',
-        {
-          method: isEdit ? 'PATCH' : 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        }
-      )
+      const res = await fetch(isEdit ? `/api/coop-listings/${listingId}` : '/api/coop-listings', {
+        method: isEdit ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
 
       const data: unknown = await res.json()
 
       if (!res.ok) {
-        const msg = data && typeof data === 'object' && 'error' in data
-          ? String((data as { error: unknown }).error)
-          : 'Something went wrong'
+        const msg =
+          data && typeof data === 'object' && 'error' in data
+            ? String((data as { error: unknown }).error)
+            : 'Something went wrong'
         setError(msg)
         return
       }
@@ -90,9 +92,10 @@ export default function CoopListingForm({ projects, listingId, initialValues }: 
       if (isEdit) {
         router.push(`/coop/${listingId}`)
       } else {
-        const id = data && typeof data === 'object' && 'id' in data
-          ? String((data as { id: unknown }).id)
-          : ''
+        const id =
+          data && typeof data === 'object' && 'id' in data
+            ? String((data as { id: unknown }).id)
+            : ''
         router.push(`/coop/${id}`)
       }
       router.refresh()
@@ -125,7 +128,9 @@ export default function CoopListingForm({ projects, listingId, initialValues }: 
       <div>
         <div className="flex items-center justify-between mb-1">
           <label className="block text-sm font-medium text-gray-700">Description</label>
-          <span className={`text-xs ${description.length > 260 ? 'text-amber-600' : 'text-gray-400'}`}>
+          <span
+            className={`text-xs ${description.length > 260 ? 'text-amber-600' : 'text-gray-400'}`}
+          >
             {description.length}/280
           </span>
         </div>
@@ -141,21 +146,34 @@ export default function CoopListingForm({ projects, listingId, initialValues }: 
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Domain Tags</label>
-        <TagInput tags={domainTags} onChange={setDomainTags} placeholder="e.g. web, mobile, data..." />
+        <TagInput
+          tags={domainTags}
+          onChange={setDomainTags}
+          placeholder="e.g. web, mobile, data..."
+        />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           I Have <span className="font-normal text-green-700">(skills you bring)</span>
         </label>
-        <TagInput tags={skillTagsHave} onChange={setSkillTagsHave} placeholder="e.g. react, design..." />
+        <TagInput
+          tags={skillTagsHave}
+          onChange={setSkillTagsHave}
+          placeholder="e.g. react, design..."
+        />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          I Need <span className="font-normal text-amber-700">(skills you're looking for)</span>
+          I Need{' '}
+          <span className="font-normal text-amber-700">(skills you&apos;re looking for)</span>
         </label>
-        <TagInput tags={skillTagsNeed} onChange={setSkillTagsNeed} placeholder="e.g. backend, marketing..." />
+        <TagInput
+          tags={skillTagsNeed}
+          onChange={setSkillTagsNeed}
+          placeholder="e.g. backend, marketing..."
+        />
       </div>
 
       <div>

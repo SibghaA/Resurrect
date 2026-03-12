@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth/session'
-import { getHandshakeByCollaborationId, signHandshake, updateHandshakePdfInfo } from '@/lib/db/handshake'
+import {
+  getHandshakeByCollaborationId,
+  signHandshake,
+  updateHandshakePdfInfo,
+} from '@/lib/db/handshake'
 import { updateCollaborationStatus } from '@/lib/db/collaboration'
 import { generateHandshakePDF, uploadToS3, computePdfHash } from '@/lib/pdf'
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -28,7 +29,7 @@ export async function POST(
   }
 
   const role = isInitiator ? 'initiator' : 'collaborator'
-  
+
   if (role === 'initiator' && handshake.initiatorSignature) {
     return NextResponse.json({ error: 'Already signed' }, { status: 400 })
   }
@@ -42,11 +43,6 @@ export async function POST(
   // Check if fully signed
   if (updatedHandshake.initiatorSignature && updatedHandshake.collaboratorSignature) {
     // Generate PDF
-    const [initName, collabName] = [
-      collab.initiator.name || 'Initiator',
-      collab.collaborator.name || 'Collaborator'
-    ]
-    
     const buffer = await generateHandshakePDF({
       title: collab.listing.project.title,
       projectDescription: updatedHandshake.projectDescription,
@@ -59,7 +55,7 @@ export async function POST(
       initiatorName: updatedHandshake.initiatorSignature,
       initiatorSignedAt: updatedHandshake.initiatorSignedAt!,
       collaboratorName: updatedHandshake.collaboratorSignature,
-      collaboratorSignedAt: updatedHandshake.collaboratorSignedAt!
+      collaboratorSignedAt: updatedHandshake.collaboratorSignedAt!,
     })
 
     const hash = computePdfHash(buffer)

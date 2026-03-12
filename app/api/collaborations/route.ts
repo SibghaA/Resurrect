@@ -25,7 +25,10 @@ export async function POST(req: Request) {
     }
 
     if (listing.userId === session.sub) {
-      return NextResponse.json({ error: 'Cannot express interest in your own listing' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Cannot express interest in your own listing' },
+        { status: 400 }
+      )
     }
 
     // Check if collaboration already exists
@@ -37,12 +40,21 @@ export async function POST(req: Request) {
     })
 
     if (existingCollab) {
-      return NextResponse.json({ error: 'Already expressed interest in this listing' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Already expressed interest in this listing' },
+        { status: 400 }
+      )
     }
 
     // Check if application note is required but missing
-    if (listing.visibility === 'Application Required' && (!applicationNote || !applicationNote.trim())) {
-      return NextResponse.json({ error: 'Application note is required for this listing' }, { status: 400 })
+    if (
+      listing.visibility === 'Application Required' &&
+      (!applicationNote || !applicationNote.trim())
+    ) {
+      return NextResponse.json(
+        { error: 'Application note is required for this listing' },
+        { status: 400 }
+      )
     }
 
     const collab = await prisma.collaboration.create({
@@ -56,8 +68,7 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({ success: true, collaboration: collab }, { status: 201 })
-  } catch (error) {
-    console.error('Error creating collaboration:', error)
+  } catch {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

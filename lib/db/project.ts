@@ -1,6 +1,5 @@
 import { prisma } from './prisma'
 import type { ProjectInput, ContextSnapshotInput } from '@/lib/validators/project'
-import { getSession } from '@/lib/auth/session'
 
 export function createProject(userId: string, data: ProjectInput) {
   return prisma.project.create({
@@ -28,11 +27,11 @@ export async function getProjectById(projectId: string, userId: string) {
         include: {
           collaborations: {
             where: {
-              OR: [{ initiatorId: userId }, { collaboratorId: userId }]
-            }
-          }
-        }
-      }
+              OR: [{ initiatorId: userId }, { collaboratorId: userId }],
+            },
+          },
+        },
+      },
     },
   })
 
@@ -49,9 +48,7 @@ export async function getProjectById(projectId: string, userId: string) {
     hasAccess = !hasPendingHandshake
   } else {
     // Non-owner has access ONLY IF they have an Active (fully signed) collaboration
-    const hasActiveCollab = project.coopListing?.collaborations.some(
-      (c) => c.status === 'Active'
-    )
+    const hasActiveCollab = project.coopListing?.collaborations.some((c) => c.status === 'Active')
     hasAccess = !!hasActiveCollab
   }
 

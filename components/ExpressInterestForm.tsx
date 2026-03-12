@@ -7,7 +7,10 @@ interface ExpressInterestFormProps {
   requiresApplication: boolean
 }
 
-export default function ExpressInterestForm({ listingId, requiresApplication }: ExpressInterestFormProps) {
+export default function ExpressInterestForm({
+  listingId,
+  requiresApplication,
+}: ExpressInterestFormProps) {
   const [note, setNote] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -37,8 +40,8 @@ export default function ExpressInterestForm({ listingId, requiresApplication }: 
       }
 
       setSuccess(true)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setIsSubmitting(false)
     }
@@ -85,7 +88,7 @@ export default function ExpressInterestForm({ listingId, requiresApplication }: 
     <div className="mt-6 bg-gray-50 rounded-xl p-6 border border-gray-200">
       <h3 className="text-gray-900 font-medium mb-2">Application Note</h3>
       <p className="text-gray-500 text-sm mb-4">
-        This listing requires an application. Briefly explain why you're a good fit.
+        This listing requires an application. Briefly explain why you&apos;re a good fit.
       </p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <textarea

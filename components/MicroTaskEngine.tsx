@@ -48,6 +48,7 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
   const [taskSource, setTaskSource] = useState<'ai' | 'template' | 'cache' | null>(null)
   const [usage, setUsage] = useState<AiUsage | null>(null)
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchTasks()
     fetchUsage()
@@ -116,8 +117,16 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
         setTaskSource(data.source)
       }
       // Update usage from response so the indicator refreshes without an extra fetch
-      if (data.usedThisMonth !== undefined && data.limit !== undefined && data.isProTier !== undefined) {
-        setUsage({ usedThisMonth: data.usedThisMonth, limit: data.limit, isProTier: data.isProTier })
+      if (
+        data.usedThisMonth !== undefined &&
+        data.limit !== undefined &&
+        data.isProTier !== undefined
+      ) {
+        setUsage({
+          usedThisMonth: data.usedThisMonth,
+          limit: data.limit,
+          isProTier: data.isProTier,
+        })
       }
     } catch {
       setError('Something went wrong. Please try again.')
@@ -137,9 +146,7 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
         if (status === 'dismissed') {
           setTasks((prev) => prev.filter((t) => t.id !== taskDbId))
         } else {
-          setTasks((prev) =>
-            prev.map((t) => (t.id === taskDbId ? { ...t, status } : t))
-          )
+          setTasks((prev) => prev.map((t) => (t.id === taskDbId ? { ...t, status } : t)))
         }
       }
     } catch {
@@ -203,9 +210,7 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
       {/* Generation Form */}
       <div className="space-y-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Target milestone
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Target milestone</label>
           <input
             type="text"
             value={targetMilestone}
@@ -246,7 +251,8 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
               <div className="flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
                 <span className="text-amber-500 mt-0.5 shrink-0">⚠</span>
                 <p className="text-xs text-amber-700">
-                  You&apos;ve used all {usage.limit} AI task generations for this month. Template tasks will be used until next month.
+                  You&apos;ve used all {usage.limit} AI task generations for this month. Template
+                  tasks will be used until next month.
                 </p>
               </div>
             ) : (
@@ -347,9 +353,7 @@ export default function MicroTaskEngine({ projectId }: MicroTaskEngineProps) {
                           {task.taskId}. {task.title}
                         </h4>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-xs text-gray-500">
-                            ~{task.estimatedMinutes}m
-                          </span>
+                          <span className="text-xs text-gray-500">~{task.estimatedMinutes}m</span>
                           <span
                             className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                               CATEGORY_COLORS[task.category] ?? 'bg-gray-100 text-gray-700'
