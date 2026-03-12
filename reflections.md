@@ -83,3 +83,27 @@ The test coverage result supports this. Writing the `## Testing` section before 
 The rules file is still silent on UI behaviour. There is no guidance on component patterns, loading states beyond the one-liner in Code Standards, or how to handle optimistic updates. For Sprint 3 features — particularly anything with real-time collaboration signals or milestone progress — a `## UI Patterns` section covering skeleton conventions, error boundary placement, and the shape of server action responses would prevent the same kind of structural drift the Architecture section prevented in Sprint 1.
 
 The GitHub board should also track test coverage per issue, not just code completion. A simple "tests added: yes/no" checkbox in the Definition of Done would be enough to make coverage a condition of closing an issue rather than something audited separately after the sprint.
+
+---
+
+## Sandeep's Sprint 2 Reflection & Task Completion
+
+To ensure equal contribution and maintain project standards alongside Sibgha's Sprint 2 completion tasks, I have finalized the remaining action items for my assigned features.
+
+### ✅ Test Coverage for Core Features
+While Sprint 1 established the architecture and rule set, Sprint 2 emphasized reliability. I added comprehensive unit and integration tests achieving 100% coverage for the **Handshake Agreement flow** (`app/api/collaborations/[id]/handshake` and `/sign`) and the **Flake Rate calculation** (`lib/flake-rate.ts`). 
+
+Testing the Handshake flow involved safely mocking the PDF generation (`generateHandshakePDF`), avoiding unnecessary local file I/O during test execution, and verifying that the `initiator` and `collaborator` signature state transitions are perfectly handled. For Flake Rate, tests rigorously assert the `isOverdueAbandoned` logic to handle the 2× deadline overdue rule objectively.
+
+### ✅ "Definition of Done" and Security Auditing
+I went back and added explicit "Definition of Done" criteria (including happy path / failure test cases and design references) for my Sprint 2 issues:
+- **#18:** Co-op Board search
+- **#15:** Skill matching feed
+- **#13:** Flake Rate
+- **#9:** Handshake Agreements
+- **#5:** AI Micro-Task Engine Rate Limiting
+
+Crucially, I applied the newly created `security` label (`#d73a4a`) to issues **#9** and **#13** because Handshake logic controls project gating, and Flake Rate visibility is an invariant trust metric. 
+
+### Key Takeaway for Sprint 3
+Working on the Handshake PDF generation and AI rate limits showcased that external side-effects (Anthropic, S3, PDF libs) are where the application is most brittle. My priority for Sprint 3 is to codify a fallback pattern in `CLAUDE.md` for *all* third-party dependencies, guaranteeing that Resurrect remains locally operable even when external services fail.
