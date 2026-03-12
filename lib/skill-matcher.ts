@@ -21,7 +21,9 @@ export interface PersonalizedListing {
   matchScore: number
 }
 
-export async function getPersonalizedListings(userId: string): Promise<PersonalizedListing[] | null> {
+export async function getPersonalizedListings(
+  userId: string
+): Promise<PersonalizedListing[] | null> {
   const user = await getUserById(userId)
   if (!user) return null
 

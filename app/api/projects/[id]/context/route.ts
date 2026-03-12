@@ -3,10 +3,7 @@ import { getSession } from '@/lib/auth/session'
 import { contextSnapshotSchema } from '@/lib/validators/project'
 import { getProjectById, updateContextSnapshot } from '@/lib/db/project'
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

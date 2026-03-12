@@ -17,6 +17,7 @@ interface CoopListingCardProps {
     skillTagsNeed: string
     timeCommitment: string
     status: string
+    project: { title: string; domain: string }
     user: { name: string | null; flakeRate: number }
   }
   matchScore?: number
@@ -64,12 +65,18 @@ export default function CoopListingCard({ listing, matchScore }: CoopListingCard
 
       <div className="flex flex-wrap gap-1.5 mt-3">
         {skillTagsHave.map((tag) => (
-          <span key={tag} className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-md font-medium">
+          <span
+            key={tag}
+            className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-md font-medium"
+          >
             Have: {tag}
           </span>
         ))}
         {skillTagsNeed.map((tag) => (
-          <span key={tag} className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-medium">
+          <span
+            key={tag}
+            className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-medium"
+          >
             Need: {tag}
           </span>
         ))}

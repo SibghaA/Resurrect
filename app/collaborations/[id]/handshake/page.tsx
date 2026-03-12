@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 type HandshakeData = {
   id: string
@@ -23,7 +24,7 @@ type HandshakeData = {
     collaboratorId: string
     initiator: { name: string | null; email: string }
     collaborator: { name: string | null; email: string }
-    listing: { project: { title: string } }
+    listing: { project: { id: string; title: string } }
   }
 }
 
@@ -36,7 +37,7 @@ export default function HandshakePage() {
   const [data, setData] = useState<HandshakeData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  
+
   // Form state
   const [ipClause, setIpClause] = useState('Equal Co-ownership')
   const [signatureName, setSignatureName] = useState('')
@@ -52,12 +53,12 @@ export default function HandshakePage() {
 
         const res = await fetch(`/api/collaborations/${id}/handshake`)
         if (!res.ok) throw new Error('Failed to load agreement')
-        
+
         const handshake = await res.json()
         setData(handshake)
         setIpClause(handshake.ipClause)
-      } catch (err: any) {
-        setError(err.message)
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Unknown error')
       } finally {
         setLoading(false)
       }
@@ -72,14 +73,14 @@ export default function HandshakePage() {
       const res = await fetch(`/api/collaborations/${id}/handshake`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ipClause })
+        body: JSON.stringify({ ipClause }),
       })
       if (!res.ok) throw new Error('Failed to save terms')
       const updated = await res.json()
       setData({ ...data, ...updated })
       alert('Terms saved')
-    } catch (err: any) {
-      alert(err.message)
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setIsSubmitting(false)
     }
@@ -94,24 +95,25 @@ export default function HandshakePage() {
       const res = await fetch(`/api/collaborations/${id}/handshake/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ signature: signatureName })
+        body: JSON.stringify({ signature: signatureName }),
       })
       if (!res.ok) throw new Error('Failed to sign')
-      
+
       // Reload page to see updated state
       window.location.reload()
-    } catch (err: any) {
-      alert(err.message)
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'An error occurred')
       setIsSubmitting(false)
     }
   }
 
   if (loading) return <div className="p-8 text-center text-gray-500">Loading agreement...</div>
-  if (error || !data || !sessionUser) return <div className="p-8 text-center text-red-500">{error || 'Unable to load'}</div>
+  if (error || !data || !sessionUser)
+    return <div className="p-8 text-center text-red-500">{error || 'Unable to load'}</div>
 
   const isInitiator = data.collaboration.initiatorId === sessionUser.sub
   const isCollaborator = data.collaboration.collaboratorId === sessionUser.sub
-  
+
   const hasInitiatorSigned = !!data.initiatorSignature
   const hasCollaboratorSigned = !!data.collaboratorSignature
   const isFullySigned = hasInitiatorSigned && hasCollaboratorSigned
@@ -124,7 +126,10 @@ export default function HandshakePage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 pb-20">
       <div className="max-w-3xl mx-auto">
-        <button onClick={() => router.back()} className="text-sm text-indigo-600 hover:underline mb-6 block">
+        <button
+          onClick={() => router.back()}
+          className="text-sm text-indigo-600 hover:underline mb-6 block"
+        >
           &larr; Back
         </button>
 
@@ -132,7 +137,8 @@ export default function HandshakePage() {
           <div className="bg-indigo-900 px-8 py-10 text-white text-center">
             <h1 className="text-2xl font-serif mb-2">Handshake Agreement</h1>
             <p className="text-indigo-200">
-              For the project: <strong className="text-white">{data.collaboration.listing.project.title}</strong>
+              For the project:{' '}
+              <strong className="text-white">{data.collaboration.listing.project.title}</strong>
             </p>
           </div>
 
@@ -140,8 +146,8 @@ export default function HandshakePage() {
             <p className="text-gray-500 italic text-sm text-center mb-8 border-b pb-8">
               This agreement outlines the terms of collaboration between{' '}
               <strong>{data.collaboration.initiator.name}</strong> (Initiator) and{' '}
-              <strong>{data.collaboration.collaborator.name}</strong> (Collaborator).
-              It must be signed by both parties before Vault access is granted.
+              <strong>{data.collaboration.collaborator.name}</strong> (Collaborator). It must be
+              signed by both parties before Vault access is granted.
             </p>
 
             <h3>1. The Project</h3>
@@ -158,19 +164,27 @@ export default function HandshakePage() {
                 className="w-full mt-2 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
                 <option value="Equal Co-ownership">Equal Co-ownership (50/50 split)</option>
-                <option value="Creator Retains All">Creator Retains All (Work for hire / volunteer)</option>
+                <option value="Creator Retains All">
+                  Creator Retains All (Work for hire / volunteer)
+                </option>
                 <option value="Custom">Custom (Negotiated off-platform)</option>
               </select>
             ) : (
-              <p className="font-medium text-gray-900 border-l-4 border-indigo-100 pl-4 py-1">{data.ipClause}</p>
+              <p className="font-medium text-gray-900 border-l-4 border-indigo-100 pl-4 py-1">
+                {data.ipClause}
+              </p>
             )}
 
             <h3>4. Credit & Attribution</h3>
             <p>{data.creditAgreement}</p>
 
             <h3>5. Confidentiality & Exit</h3>
-            <p><strong>Confidentiality:</strong> {data.confidentiality}</p>
-            <p><strong>Withdrawal:</strong> {data.exitClause}</p>
+            <p>
+              <strong>Confidentiality:</strong> {data.confidentiality}
+            </p>
+            <p>
+              <strong>Withdrawal:</strong> {data.exitClause}
+            </p>
 
             {canEdit && (
               <div className="mt-8 pt-6 border-t border-gray-100 flex justify-end">
@@ -184,18 +198,24 @@ export default function HandshakePage() {
               </div>
             )}
           </div>
-          
+
           <div className="bg-gray-50 border-t border-gray-200 p-8">
             <h3 className="text-lg font-semibold text-gray-900 mb-6 shrink-0">Signatures</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Initiator */}
               <div className="space-y-4">
-                <div className="text-sm text-gray-500 uppercase font-semibold tracking-wider">Initiator</div>
+                <div className="text-sm text-gray-500 uppercase font-semibold tracking-wider">
+                  Initiator
+                </div>
                 {hasInitiatorSigned ? (
                   <div className="bg-white border-2 border-green-100 p-4 rounded-xl">
-                    <p className="font-serif text-xl text-gray-900 italic">{data.initiatorSignature}</p>
-                    <p className="text-xs text-gray-500 mt-2">Signed: {new Date(data.initiatorSignedAt!).toLocaleString()}</p>
+                    <p className="font-serif text-xl text-gray-900 italic">
+                      {data.initiatorSignature}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Signed: {new Date(data.initiatorSignedAt!).toLocaleString()}
+                    </p>
                   </div>
                 ) : (
                   <div className="bg-white border border-gray-200 border-dashed p-4 rounded-xl h-[92px] flex items-center justify-center text-sm text-gray-400">
@@ -206,11 +226,17 @@ export default function HandshakePage() {
 
               {/* Collaborator */}
               <div className="space-y-4">
-                <div className="text-sm text-gray-500 uppercase font-semibold tracking-wider">Collaborator</div>
+                <div className="text-sm text-gray-500 uppercase font-semibold tracking-wider">
+                  Collaborator
+                </div>
                 {hasCollaboratorSigned ? (
                   <div className="bg-white border-2 border-green-100 p-4 rounded-xl">
-                    <p className="font-serif text-xl text-gray-900 italic">{data.collaboratorSignature}</p>
-                    <p className="text-xs text-gray-500 mt-2">Signed: {new Date(data.collaboratorSignedAt!).toLocaleString()}</p>
+                    <p className="font-serif text-xl text-gray-900 italic">
+                      {data.collaboratorSignature}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Signed: {new Date(data.collaboratorSignedAt!).toLocaleString()}
+                    </p>
                   </div>
                 ) : (
                   <div className="bg-white border border-gray-200 border-dashed p-4 rounded-xl h-[92px] flex items-center justify-center text-sm text-gray-400">
@@ -252,11 +278,16 @@ export default function HandshakePage() {
                   <span className="text-xl">✅</span>
                 </div>
                 <h3 className="text-green-900 font-medium">Agreement Executed</h3>
-                <p className="text-green-800 text-sm mt-1">Both parties have signed. Vault access is now unlocked.</p>
+                <p className="text-green-800 text-sm mt-1">
+                  Both parties have signed. Vault access is now unlocked.
+                </p>
                 <p className="text-xs text-green-700 mt-4 opacity-75 break-all max-w-full">
                   Archived locally at: {data.pdfS3Key}
                 </p>
-                <Link href={`/vault/${data.collaboration.listing.project.id}`} className="mt-6 bg-white border border-green-300 text-green-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-green-50">
+                <Link
+                  href={`/vault/${data.collaboration.listing.project.id}`}
+                  className="mt-6 bg-white border border-green-300 text-green-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-green-50"
+                >
                   Enter Vault
                 </Link>
               </div>

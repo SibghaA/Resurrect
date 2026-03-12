@@ -1,10 +1,10 @@
 When the Resurrect repo with claude.md was provided, the CLAUDE.md stack prescription was followed to the letter.
 
 Separation of concerns is clean and enforced by the rules:
-lib/auth/jwt.ts        ← token sign/verify only
-lib/auth/password.ts   ← bcrypt hash/compare only
-lib/auth/session.ts    ← cookie read/write using jwt helpers
-lib/db/user.ts         ← all Prisma queries in one place
+lib/auth/jwt.ts ← token sign/verify only
+lib/auth/password.ts ← bcrypt hash/compare only
+lib/auth/session.ts ← cookie read/write using jwt helpers
+lib/db/user.ts ← all Prisma queries in one place
 lib/validators/auth.ts ← Zod schemas for register/login
 lib/validators/profile.ts ← Zod schema for profile
 

@@ -79,6 +79,8 @@ describe('statusUpdateSchema', () => {
   })
 
   it('rejects notes longer than 500 characters', () => {
-    expect(statusUpdateSchema.safeParse({ status: 'Paused', notes: 'x'.repeat(501) }).success).toBe(false)
+    expect(statusUpdateSchema.safeParse({ status: 'Paused', notes: 'x'.repeat(501) }).success).toBe(
+      false
+    )
   })
 })

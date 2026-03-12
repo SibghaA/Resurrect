@@ -27,7 +27,13 @@ export function getCoopListingById(id: string) {
   })
 }
 
-export function getActiveCoopListings(filters?: { status?: string; search?: string; domain?: string; skillNeed?: string; commitment?: string }) {
+export function getActiveCoopListings(filters?: {
+  status?: string
+  search?: string
+  domain?: string
+  skillNeed?: string
+  commitment?: string
+}) {
   return prisma.coopListing.findMany({
     where: {
       active: true,
@@ -72,8 +78,10 @@ export function updateCoopListing(id: string, data: CoopListingUpdateInput) {
   const updateData: Record<string, unknown> = {}
   if (data.description !== undefined) updateData.description = data.description
   if (data.domainTags !== undefined) updateData.domainTags = JSON.stringify(data.domainTags)
-  if (data.skillTagsHave !== undefined) updateData.skillTagsHave = JSON.stringify(data.skillTagsHave)
-  if (data.skillTagsNeed !== undefined) updateData.skillTagsNeed = JSON.stringify(data.skillTagsNeed)
+  if (data.skillTagsHave !== undefined)
+    updateData.skillTagsHave = JSON.stringify(data.skillTagsHave)
+  if (data.skillTagsNeed !== undefined)
+    updateData.skillTagsNeed = JSON.stringify(data.skillTagsNeed)
   if (data.timeCommitment !== undefined) updateData.timeCommitment = data.timeCommitment
   if (data.milestonePreview !== undefined) updateData.milestonePreview = data.milestonePreview
   if (data.status !== undefined) updateData.status = data.status

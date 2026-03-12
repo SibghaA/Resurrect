@@ -3,10 +3,7 @@ import { getSession } from '@/lib/auth/session'
 import { statusUpdateSchema } from '@/lib/validators/project'
 import { getProjectById, updateProjectStatus } from '@/lib/db/project'
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -27,12 +24,7 @@ export async function PUT(
     return NextResponse.json({ error: 'Project is already in this status' }, { status: 400 })
   }
 
-  await updateProjectStatus(
-    params.id,
-    project.status,
-    result.data.status,
-    result.data.notes
-  )
+  await updateProjectStatus(params.id, project.status, result.data.status, result.data.notes)
 
   return NextResponse.json({ status: result.data.status })
 }

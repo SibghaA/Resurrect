@@ -19,11 +19,6 @@ type CollabForRate = {
 function isOverdueAbandoned(collab: CollabForRate, now: Date): boolean {
   if (!collab.milestoneDeadline) return false
   const deadline = new Date(collab.milestoneDeadline)
-  const twiceDeadlineMs = deadline.getTime() + (deadline.getTime() - collab.createdAt?.getTime?.() || 0)
-  // Simpler and correct: 2× overdue = now is more than (deadline + (deadline - start)) past.
-  // Per spec: milestone is 2× overdue = current time > 2 * deadline duration from start.
-  // We'll interpret it as: now > deadline + deadlineDuration, i.e. now > 2 * deadline_timestamp relative to creation.
-  // Most practical interpretation: now is past twice the milestone deadline date itself.
   if (now.getTime() <= deadline.getTime() * 2 - new Date(0).getTime()) return false
 
   // No communication after the deadline
@@ -43,9 +38,7 @@ export function computeFlakeRate(collabs: CollabForRate[], now = new Date()): nu
   )
   if (resolved.length === 0) return 0
 
-  const abandoned = resolved.filter(
-    (c) => c.status === 'Abandoned' || isOverdueAbandoned(c, now)
-  )
+  const abandoned = resolved.filter((c) => c.status === 'Abandoned' || isOverdueAbandoned(c, now))
 
   return Math.round((abandoned.length / resolved.length) * 1000) / 10
 }

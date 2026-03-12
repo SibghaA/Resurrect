@@ -20,13 +20,16 @@ export type AITask = z.infer<typeof aiTaskSchema>
 
 export const aiTaskListSchema = z.array(aiTaskSchema).min(1).max(30)
 
-export const microTaskUpdateSchema = z.object({
-  status: z.enum(['pending', 'accepted', 'dismissed']).optional(),
-  title: z.string().min(1).max(200).optional(),
-  description: z.string().min(1).max(1000).optional(),
-}).refine(
-  (data) => data.status !== undefined || data.title !== undefined || data.description !== undefined,
-  { message: 'At least one field must be provided' }
-)
+export const microTaskUpdateSchema = z
+  .object({
+    status: z.enum(['pending', 'accepted', 'dismissed']).optional(),
+    title: z.string().min(1).max(200).optional(),
+    description: z.string().min(1).max(1000).optional(),
+  })
+  .refine(
+    (data) =>
+      data.status !== undefined || data.title !== undefined || data.description !== undefined,
+    { message: 'At least one field must be provided' }
+  )
 
 export type MicroTaskUpdateInput = z.infer<typeof microTaskUpdateSchema>

@@ -12,11 +12,7 @@ const STATUS_COLORS: Record<string, string> = {
   Complete: 'bg-gray-100 text-gray-800',
 }
 
-export default async function CoopListingDetailPage({
-  params,
-}: {
-  params: { id: string }
-}) {
+export default async function CoopListingDetailPage({ params }: { params: { id: string } }) {
   const session = await getSession()
 
   const listing = await getCoopListingById(params.id)
@@ -26,15 +22,12 @@ export default async function CoopListingDetailPage({
   const skillTagsHave = JSON.parse(listing.skillTagsHave) as string[]
   const skillTagsNeed = JSON.parse(listing.skillTagsNeed) as string[]
   const statusColor = STATUS_COLORS[listing.status] ?? 'bg-gray-100 text-gray-800'
-  const isOwner = listing.userId === session.sub
+  const isOwner = listing.userId === session?.sub
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto">
-        <Link
-          href="/coop"
-          className="text-sm text-indigo-600 hover:underline font-medium"
-        >
+        <Link href="/coop" className="text-sm text-indigo-600 hover:underline font-medium">
           &larr; Back to Co-op Board
         </Link>
 
@@ -44,7 +37,9 @@ export default async function CoopListingDetailPage({
               <h1 className="text-2xl font-bold text-gray-900">{listing.project.title}</h1>
               <p className="text-sm text-gray-500 mt-0.5">{listing.project.domain}</p>
             </div>
-            <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${statusColor}`}>
+            <span
+              className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${statusColor}`}
+            >
               {listing.status}
             </span>
           </div>
@@ -53,10 +48,15 @@ export default async function CoopListingDetailPage({
 
           {domainTags.length > 0 && (
             <div className="mt-4">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Domains</p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                Domains
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {domainTags.map((tag) => (
-                  <span key={tag} className="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md">
+                  <span
+                    key={tag}
+                    className="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md"
+                  >
                     {tag}
                   </span>
                 ))}
@@ -67,10 +67,15 @@ export default async function CoopListingDetailPage({
           <div className="grid grid-cols-2 gap-4 mt-4">
             {skillTagsHave.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">I Have</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  I Have
+                </p>
                 <div className="flex flex-wrap gap-1.5">
                   {skillTagsHave.map((tag) => (
-                    <span key={tag} className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-md font-medium">
+                    <span
+                      key={tag}
+                      className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-md font-medium"
+                    >
                       {tag}
                     </span>
                   ))}
@@ -79,10 +84,15 @@ export default async function CoopListingDetailPage({
             )}
             {skillTagsNeed.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">I Need</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                  I Need
+                </p>
                 <div className="flex flex-wrap gap-1.5">
                   {skillTagsNeed.map((tag) => (
-                    <span key={tag} className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-medium">
+                    <span
+                      key={tag}
+                      className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-medium"
+                    >
                       {tag}
                     </span>
                   ))}
@@ -92,19 +102,31 @@ export default async function CoopListingDetailPage({
           </div>
 
           <div className="mt-4 pt-4 border-t border-gray-100 space-y-1.5 text-sm text-gray-600">
-            <p><span className="font-medium text-gray-700">Time Commitment:</span> {listing.timeCommitment}</p>
-            <p><span className="font-medium text-gray-700">Visibility:</span> {listing.visibility}</p>
+            <p>
+              <span className="font-medium text-gray-700">Time Commitment:</span>{' '}
+              {listing.timeCommitment}
+            </p>
+            <p>
+              <span className="font-medium text-gray-700">Visibility:</span> {listing.visibility}
+            </p>
           </div>
 
           <div className="mt-4 pt-4 border-t border-gray-100">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">First Milestone</p>
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+              First Milestone
+            </p>
             <p className="text-sm text-gray-700">{listing.milestonePreview}</p>
           </div>
 
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
             <span>{listing.user.name ?? 'Unknown'}</span>
             <span className="text-gray-300">·</span>
-            <span>Flake Rate: <span className="font-medium text-gray-700">{listing.user.flakeRate.toFixed(1)}%</span></span>
+            <span>
+              Flake Rate:{' '}
+              <span className="font-medium text-gray-700">
+                {listing.user.flakeRate.toFixed(1)}%
+              </span>
+            </span>
           </div>
         </div>
 
@@ -116,9 +138,9 @@ export default async function CoopListingDetailPage({
         )}
 
         {!isOwner && session && (
-          <ExpressInterestForm 
-            listingId={listing.id} 
-            requiresApplication={listing.visibility === 'Application Required'} 
+          <ExpressInterestForm
+            listingId={listing.id}
+            requiresApplication={listing.visibility === 'Application Required'}
           />
         )}
 

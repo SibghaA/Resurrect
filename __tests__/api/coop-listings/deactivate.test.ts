@@ -38,7 +38,11 @@ describe('PATCH /api/coop-listings/[id]/deactivate', () => {
   })
 
   it('returns 403 when not the owner', async () => {
-    mockGetSession.mockResolvedValue({ sub: 'other', email: 'x@x.com', profileSetup: true } as never)
+    mockGetSession.mockResolvedValue({
+      sub: 'other',
+      email: 'x@x.com',
+      profileSetup: true,
+    } as never)
     const res = await PATCH(makeRequest(), { params: { id: 'l1' } })
     expect(res.status).toBe(403)
   })

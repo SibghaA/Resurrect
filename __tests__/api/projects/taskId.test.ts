@@ -35,19 +35,25 @@ describe('PATCH /api/projects/[id]/tasks/[taskId]', () => {
 
   it('returns 401 when not authenticated', async () => {
     mockGetSession.mockResolvedValue(null)
-    const res = await PATCH(makeRequest({ status: 'accepted' }), { params: { id: 'p1', taskId: 't1' } })
+    const res = await PATCH(makeRequest({ status: 'accepted' }), {
+      params: { id: 'p1', taskId: 't1' },
+    })
     expect(res.status).toBe(401)
   })
 
   it('returns 404 when project not found', async () => {
     mockGetProjectById.mockResolvedValue(null)
-    const res = await PATCH(makeRequest({ status: 'accepted' }), { params: { id: 'bad', taskId: 't1' } })
+    const res = await PATCH(makeRequest({ status: 'accepted' }), {
+      params: { id: 'bad', taskId: 't1' },
+    })
     expect(res.status).toBe(404)
   })
 
   it('returns 404 when task not found', async () => {
     mockGetTaskById.mockResolvedValue(null)
-    const res = await PATCH(makeRequest({ status: 'accepted' }), { params: { id: 'p1', taskId: 'bad' } })
+    const res = await PATCH(makeRequest({ status: 'accepted' }), {
+      params: { id: 'p1', taskId: 'bad' },
+    })
     expect(res.status).toBe(404)
     const data = await res.json()
     expect(data.error).toBe('Task not found')
@@ -59,18 +65,24 @@ describe('PATCH /api/projects/[id]/tasks/[taskId]', () => {
   })
 
   it('returns 400 for invalid status value', async () => {
-    const res = await PATCH(makeRequest({ status: 'completed' }), { params: { id: 'p1', taskId: 't1' } })
+    const res = await PATCH(makeRequest({ status: 'completed' }), {
+      params: { id: 'p1', taskId: 't1' },
+    })
     expect(res.status).toBe(400)
   })
 
   it('updates and returns the task', async () => {
-    const res = await PATCH(makeRequest({ status: 'accepted' }), { params: { id: 'p1', taskId: 't1' } })
+    const res = await PATCH(makeRequest({ status: 'accepted' }), {
+      params: { id: 'p1', taskId: 't1' },
+    })
     expect(res.status).toBe(200)
     expect(mockUpdateTask).toHaveBeenCalledWith('t1', { status: 'accepted' })
   })
 
   it('updates title only', async () => {
-    const res = await PATCH(makeRequest({ title: 'New title' }), { params: { id: 'p1', taskId: 't1' } })
+    const res = await PATCH(makeRequest({ title: 'New title' }), {
+      params: { id: 'p1', taskId: 't1' },
+    })
     expect(res.status).toBe(200)
     expect(mockUpdateTask).toHaveBeenCalledWith('t1', { title: 'New title' })
   })

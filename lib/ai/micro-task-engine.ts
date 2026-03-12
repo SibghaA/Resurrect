@@ -2,7 +2,11 @@ import { createHash } from 'crypto'
 import { generateCompletion } from './client'
 import { MICRO_TASK_SYSTEM_PROMPT, buildMicroTaskUserMessage } from './prompts'
 import { aiTaskListSchema } from '@/lib/validators/micro-task'
-import { createMicroTaskBatch, deleteAllMicroTasks, getMicroTasksByProject } from '@/lib/db/micro-task'
+import {
+  createMicroTaskBatch,
+  deleteAllMicroTasks,
+  getMicroTasksByProject,
+} from '@/lib/db/micro-task'
 import { getCachedTasks, setCachedTasks } from '@/lib/db/ai-cache'
 import { checkAiRateLimit, incrementAiCalls } from './rate-limit'
 import { generateFallbackTasks } from './fallback'

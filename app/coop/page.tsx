@@ -10,7 +10,14 @@ import CoopBoardFilters from '@/components/CoopBoardFilters'
 export default async function CoopBoardPage({
   searchParams,
 }: {
-  searchParams: { status?: string; search?: string; feed?: string; domain?: string; skillNeed?: string; commitment?: string }
+  searchParams: {
+    status?: string
+    search?: string
+    feed?: string
+    domain?: string
+    skillNeed?: string
+    commitment?: string
+  }
 }) {
   const session = await getSession()
   const isForYou = searchParams.feed === 'foryou'
@@ -19,28 +26,22 @@ export default async function CoopBoardPage({
     redirect('/auth/login')
   }
 
-  let listings: any[] | null = []
-  if (isForYou) {
-    listings = await getPersonalizedListings(session!.sub)
-  } else {
-    listings = await getActiveCoopListings({
-      status: searchParams.status,
-      search: searchParams.search,
-      domain: searchParams.domain,
-      skillNeed: searchParams.skillNeed,
-      commitment: searchParams.commitment,
-    })
-  }
+  const listings = isForYou
+    ? await getPersonalizedListings(session!.sub)
+    : await getActiveCoopListings({
+        status: searchParams.status,
+        search: searchParams.search,
+        domain: searchParams.domain,
+        skillNeed: searchParams.skillNeed,
+        commitment: searchParams.commitment,
+      })
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Co-op Board</h1>
-          <Link
-            href="/dashboard"
-            className="text-sm text-indigo-600 hover:underline font-medium"
-          >
+          <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline font-medium">
             Dashboard
           </Link>
         </div>
@@ -98,14 +99,18 @@ export default async function CoopBoardPage({
               {isForYou
                 ? 'No projects currently need your exact skills. Try expanding your skill tags!'
                 : searchParams.status || searchParams.search
-                ? 'No listings match your filters.'
-                : 'No listings yet. Be the first to post!'}
+                  ? 'No listings match your filters.'
+                  : 'No listings yet. Be the first to post!'}
             </p>
           </div>
         ) : (
           <div className="space-y-4">
             {listings.map((listing) => (
-              <CoopListingCard key={listing.id} listing={listing} matchScore={listing.matchScore} />
+              <CoopListingCard
+                key={listing.id}
+                listing={listing}
+                matchScore={'matchScore' in listing ? listing.matchScore : undefined}
+              />
             ))}
           </div>
         )}

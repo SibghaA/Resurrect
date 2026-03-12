@@ -1,0 +1,227 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check Prettier formatting
+        run: npm run format:check
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npm run test:coverage
+        env:
+          JWT_SECRET: test-secret-for-ci
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+      - name: Coverage summary
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs')
+            if (!fs.existsSync('coverage/coverage-summary.json')) return
+            const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'))
+            const total = summary.total
+            const lines = [
+              '## Coverage Report',
+              '',
+              `| Metric | Coverage |`,
+              `|--------|----------|`,
+              `| Statements | ${total.statements.pct}% |`,
+              `| Branches | ${total.branches.pct}% |`,
+              `| Functions | ${total.functions.pct}% |`,
+              `| Lines | ${total.lines.pct}% |`,
+            ]
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: lines.join('\n'),
+            })
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: resurrect
+          POSTGRES_PASSWORD: resurrect
+          POSTGRES_DB: resurrect_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Prisma migrations
+        run: npm run db:setup && npx prisma db push
+        env:
+          DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_test
+
+      - name: Run integration tests
+        run: npm run test:integration
+        env:
+          JWT_SECRET: test-secret-for-ci
+          DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_test
+          TEST_DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_test
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=critical --omit=dev
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_build
+          JWT_SECRET: build-secret
+          NEXT_TELEMETRY_DISABLED: 1
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.event_name == 'pull_request'
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: resurrect
+          POSTGRES_PASSWORD: resurrect
+          POSTGRES_DB: resurrect_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Prisma migrations
+        run: npm run db:setup && npx prisma db push
+        env:
+          DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_e2e
+
+      - name: Build app
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_e2e
+          JWT_SECRET: e2e-test-secret
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          DATABASE_URL: postgresql://resurrect:resurrect@localhost:5432/resurrect_e2e
+          JWT_SECRET: e2e-test-secret
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

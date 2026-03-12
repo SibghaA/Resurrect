@@ -14,11 +14,7 @@ interface ContextSnapshotData {
   nextSteps?: string
 }
 
-export default async function ProjectDetailPage({
-  params,
-}: {
-  params: { id: string }
-}) {
+export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) redirect('/auth/login')
 
@@ -40,17 +36,16 @@ export default async function ProjectDetailPage({
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto">
-        <Link
-          href="/vault"
-          className="text-sm text-indigo-600 hover:underline font-medium"
-        >
+        <Link href="/vault" className="text-sm text-indigo-600 hover:underline font-medium">
           &larr; Back to Vault
         </Link>
 
         <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-start justify-between">
             <h1 className="text-2xl font-bold text-gray-900">{project.title}</h1>
-            <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ml-4 ${statusBadgeColor(project.status)}`}>
+            <span
+              className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ml-4 ${statusBadgeColor(project.status)}`}
+            >
               {project.status}
             </span>
           </div>
@@ -131,17 +126,19 @@ export default async function ProjectDetailPage({
                   </div>
                   <div className="pb-4">
                     <p className="text-sm text-gray-900">
-                      <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mr-1 ${statusBadgeColor(log.fromStatus)}`}>
+                      <span
+                        className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mr-1 ${statusBadgeColor(log.fromStatus)}`}
+                      >
                         {log.fromStatus}
                       </span>
                       {' → '}
-                      <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ml-1 ${statusBadgeColor(log.toStatus)}`}>
+                      <span
+                        className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ml-1 ${statusBadgeColor(log.toStatus)}`}
+                      >
                         {log.toStatus}
                       </span>
                     </p>
-                    {log.notes && (
-                      <p className="text-sm text-gray-600 mt-1">{log.notes}</p>
-                    )}
+                    {log.notes && <p className="text-sm text-gray-600 mt-1">{log.notes}</p>}
                     <p className="text-xs text-gray-400 mt-1">
                       {format(new Date(log.createdAt), 'MMM d, yyyy · h:mm a')}
                     </p>

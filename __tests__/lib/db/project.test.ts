@@ -3,7 +3,7 @@ jest.mock('@/lib/db/prisma', () => ({
     project: {
       create: jest.fn(),
       findMany: jest.fn(),
-      findFirst: jest.fn(),
+      findUnique: jest.fn(),
       update: jest.fn(),
     },
     statusLog: {
@@ -58,13 +58,24 @@ describe('getProjectsByUserId', () => {
 })
 
 describe('getProjectById', () => {
-  it('queries by id and userId, includes statusLogs', async () => {
-    mockProject.findFirst.mockResolvedValue(null)
-    await getProjectById('p1', 'u1')
-    expect(mockProject.findFirst).toHaveBeenCalledWith({
-      where: { id: 'p1', userId: 'u1' },
-      include: { statusLogs: { orderBy: { createdAt: 'desc' } } },
-    })
+  it('returns null when project does not exist', async () => {
+    mockProject.findUnique.mockResolvedValue(null)
+    const result = await getProjectById('p1', 'u1')
+    expect(result).toBeNull()
+    expect(mockProject.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'p1' } })
+    )
+  })
+
+  it('returns project when user is the owner', async () => {
+    const fakeProject = {
+      id: 'p1',
+      userId: 'u1',
+      coopListing: null,
+    }
+    mockProject.findUnique.mockResolvedValue(fakeProject as never)
+    const result = await getProjectById('p1', 'u1')
+    expect(result).toBe(fakeProject)
   })
 })
 

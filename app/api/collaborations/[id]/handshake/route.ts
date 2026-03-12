@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth/session'
-import { getHandshakeByCollaborationId, createHandshakeAgreement, updateHandshakeAgreement } from '@/lib/db/handshake'
+import {
+  getHandshakeByCollaborationId,
+  createHandshakeAgreement,
+  updateHandshakeAgreement,
+} from '@/lib/db/handshake'
 import { getCollaborationById } from '@/lib/db/collaboration'
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -21,23 +22,20 @@ export async function GET(
 
   if (!handshake) {
     // Auto-create a draft if it doesn't exist yet
-    handshake = await createHandshakeAgreement({
+    handshake = (await createHandshakeAgreement({
       collaborationId: params.id,
       projectDescription: collab.listing.description,
       collaboratorRole: collab.listing.skillTagsNeed, // default to what was requested
       ipClause: 'Equal Co-ownership',
       creditAgreement: 'Prominent mention as co-creator',
       milestoneSchedule: '[]',
-    }) as any
+    })) as Awaited<ReturnType<typeof getHandshakeByCollaborationId>>
   }
 
   return NextResponse.json(handshake)
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -64,7 +62,10 @@ export async function PATCH(
     creditAgreement: body.creditAgreement,
     exitClause: body.exitClause,
     confidentiality: body.confidentiality,
-    milestoneSchedule: typeof body.milestoneSchedule === 'string' ? body.milestoneSchedule : JSON.stringify(body.milestoneSchedule),
+    milestoneSchedule:
+      typeof body.milestoneSchedule === 'string'
+        ? body.milestoneSchedule
+        : JSON.stringify(body.milestoneSchedule),
   })
 
   return NextResponse.json(updated)

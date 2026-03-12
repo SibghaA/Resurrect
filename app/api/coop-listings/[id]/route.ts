@@ -3,10 +3,7 @@ import { getSession } from '@/lib/auth/session'
 import { coopListingUpdateSchema } from '@/lib/validators/coop-listing'
 import { getCoopListingById, updateCoopListing, deleteCoopListing } from '@/lib/db/coop-listing'
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -20,10 +17,7 @@ export async function GET(
   return NextResponse.json(listing)
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -47,10 +41,7 @@ export async function PATCH(
   return NextResponse.json(updated)
 }
 
-export async function DELETE(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

@@ -67,25 +67,29 @@ describe('getCoopListingById', () => {
 })
 
 describe('getActiveCoopListings', () => {
+  beforeEach(() => {
+    mockCoop.findMany.mockClear()
+  })
+
   it('filters by active:true with no extra filters', async () => {
     mockCoop.findMany.mockResolvedValue([])
     await getActiveCoopListings()
-    const call = mockCoop.findMany.mock.calls[0][0]
-    expect(call.where.active).toBe(true)
+    const call = mockCoop.findMany.mock.calls[0]![0]!
+    expect(call.where!.active).toBe(true)
   })
 
   it('applies status filter when provided', async () => {
     mockCoop.findMany.mockResolvedValue([])
     await getActiveCoopListings({ status: 'Open' })
-    const call = mockCoop.findMany.mock.calls[0][0]
-    expect(call.where.status).toBe('Open')
+    const call = mockCoop.findMany.mock.calls[0]![0]!
+    expect(call.where!.status).toBe('Open')
   })
 
   it('applies search filter when provided', async () => {
     mockCoop.findMany.mockResolvedValue([])
     await getActiveCoopListings({ search: 'designer' })
-    const call = mockCoop.findMany.mock.calls[0][0]
-    expect(call.where.OR).toBeDefined()
+    const call = mockCoop.findMany.mock.calls[0]![0]!
+    expect(call.where!.OR).toBeDefined()
   })
 })
 

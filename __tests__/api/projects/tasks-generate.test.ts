@@ -1,23 +1,35 @@
 jest.mock('@/lib/auth/session')
 jest.mock('@/lib/db/project')
 jest.mock('@/lib/ai/micro-task-engine')
-jest.mock('@/lib/db/micro-task')
 
 import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/projects/[id]/tasks/generate/route'
 import { getSession } from '@/lib/auth/session'
 import { getProjectById } from '@/lib/db/project'
 import { generateMicroTasks } from '@/lib/ai/micro-task-engine'
-import { getMicroTasksByProject } from '@/lib/db/micro-task'
 
 const mockGetSession = getSession as jest.MockedFunction<typeof getSession>
 const mockGetProjectById = getProjectById as jest.MockedFunction<typeof getProjectById>
 const mockGenerateTasks = generateMicroTasks as jest.MockedFunction<typeof generateMicroTasks>
-const mockGetTasks = getMicroTasksByProject as jest.MockedFunction<typeof getMicroTasksByProject>
 
 const session = { sub: 'u1', email: 'user@example.com', profileSetup: true }
-const project = { id: 'p1', title: 'My App', description: 'App', domain: 'Web', contextSnapshot: '{}', statusLogs: [] }
+const project = {
+  id: 'p1',
+  title: 'My App',
+  description: 'App',
+  domain: 'Web',
+  contextSnapshot: '{}',
+  statusLogs: [],
+}
 const generatedTasks = [{ id: 't1', title: 'Set up DB', status: 'pending' }]
+const generateResult = {
+  batchId: 'b1',
+  tasks: generatedTasks,
+  source: 'ai',
+  usedThisMonth: 1,
+  limit: 10,
+  isProTier: false,
+}
 
 function makeRequest(body: unknown) {
   return new NextRequest('http://localhost/api/projects/p1/tasks/generate', {
@@ -31,8 +43,7 @@ describe('POST /api/projects/[id]/tasks/generate', () => {
   beforeEach(() => {
     mockGetSession.mockResolvedValue(session as never)
     mockGetProjectById.mockResolvedValue(project as never)
-    mockGenerateTasks.mockResolvedValue({ batchId: 'b1', tasks: [] } as never)
-    mockGetTasks.mockResolvedValue(generatedTasks as never)
+    mockGenerateTasks.mockResolvedValue(generateResult as never)
   })
 
   it('returns 401 when not authenticated', async () => {
@@ -53,11 +64,13 @@ describe('POST /api/projects/[id]/tasks/generate', () => {
   })
 
   it('generates tasks and returns 201 with task list', async () => {
-    const res = await POST(makeRequest({ targetMilestone: 'Deploy MVP', timeAvailability: 60 }), { params: { id: 'p1' } })
+    const res = await POST(makeRequest({ targetMilestone: 'Deploy MVP', timeAvailability: 60 }), {
+      params: { id: 'p1' },
+    })
     expect(res.status).toBe(201)
     const data = await res.json()
     expect(data.tasks).toHaveLength(1)
-    expect(mockGenerateTasks).toHaveBeenCalledWith(project, 'Deploy MVP', 60)
+    expect(mockGenerateTasks).toHaveBeenCalledWith(project, 'Deploy MVP', 60, 'u1')
   })
 
   it('returns 500 with error message when AI throws an Error', async () => {

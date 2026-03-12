@@ -6,12 +6,18 @@ import { NextRequest } from 'next/server'
 import { GET, POST } from '@/app/api/coop-listings/route'
 import { getSession } from '@/lib/auth/session'
 import { getProjectById } from '@/lib/db/project'
-import { getActiveCoopListings, getActiveListingByProjectId, createCoopListing } from '@/lib/db/coop-listing'
+import {
+  getActiveCoopListings,
+  getActiveListingByProjectId,
+  createCoopListing,
+} from '@/lib/db/coop-listing'
 
 const mockGetSession = getSession as jest.MockedFunction<typeof getSession>
 const mockGetProjectById = getProjectById as jest.MockedFunction<typeof getProjectById>
 const mockGetActive = getActiveCoopListings as jest.MockedFunction<typeof getActiveCoopListings>
-const mockGetActiveByProject = getActiveListingByProjectId as jest.MockedFunction<typeof getActiveListingByProjectId>
+const mockGetActiveByProject = getActiveListingByProjectId as jest.MockedFunction<
+  typeof getActiveListingByProjectId
+>
 const mockCreate = createCoopListing as jest.MockedFunction<typeof createCoopListing>
 
 const session = { sub: 'u1', email: 'user@example.com', profileSetup: true }

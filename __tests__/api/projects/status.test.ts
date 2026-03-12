@@ -53,7 +53,9 @@ describe('PUT /api/projects/[id]/status', () => {
   })
 
   it('updates status and returns new status', async () => {
-    const res = await PUT(makeRequest({ status: 'Paused', notes: 'Taking a break' }), { params: { id: 'p1' } })
+    const res = await PUT(makeRequest({ status: 'Paused', notes: 'Taking a break' }), {
+      params: { id: 'p1' },
+    })
     expect(res.status).toBe(200)
     const data = await res.json()
     expect(data.status).toBe('Paused')
