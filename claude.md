@@ -1,7 +1,7 @@
 # CLAUDE.md — Resurrect
 
 ## Stack
-Next.js 14 (App Router) · TypeScript · Tailwind CSS · SQLite · Prisma · JWT (auth)
+Next.js 14 (App Router) · TypeScript · Tailwind CSS · Postgres · Prisma · JWT (auth)
 
 ## Architecture
 - Business logic lives in `lib/` — API routes are controllers only; if a route handler exceeds 20 lines, extract a service
