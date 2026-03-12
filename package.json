@@ -3,13 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "db:setup": "node scripts/setup-prisma.js",
+    "dev": "npm run db:setup && next dev",
+    "build": "npm run db:setup && next build",
     "start": "next start",
     "test": "jest",
     "test:watch": "jest --watch",
-    "db:push": "prisma db push",
-    "db:generate": "prisma generate"
+    "db:push": "npm run db:setup && prisma db push",
+    "db:generate": "npm run db:setup && prisma generate",
+    "postinstall": "npm run db:setup && prisma generate"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
