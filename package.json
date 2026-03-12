@@ -11,7 +11,7 @@
     "test:watch": "jest --watch",
     "db:push": "npm run db:setup && prisma db push",
     "db:generate": "npm run db:setup && prisma generate",
-    "postinstall": "npm run db:setup && prisma generate"
+    "postinstall": "npm run db:setup && prisma generate && prisma db push"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

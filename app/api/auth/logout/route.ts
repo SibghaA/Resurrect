@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { clearSession } from '@/lib/auth/session'
 
 export async function POST() {
-  clearSession()
-  return NextResponse.json({ success: true })
+  const response = NextResponse.json({ success: true })
+  response.cookies.set('token', '', { maxAge: 0, path: '/' })
+  return response
 }

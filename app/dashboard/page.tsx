@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { getSession } from '@/lib/auth/session'
+import { getSession, clearSession } from '@/lib/auth/session'
 import { getUserById } from '@/lib/db/user'
 import LogoutButton from '@/components/LogoutButton'
 
@@ -9,7 +9,10 @@ export default async function DashboardPage() {
   if (!session) redirect('/auth/login')
 
   const user = await getUserById(session.sub)
-  if (!user) redirect('/auth/login')
+  if (!user) {
+    clearSession()
+    redirect('/auth/login')
+  }
 
   const skillTags = JSON.parse(user.skillTags) as string[]
   const socialLinks = JSON.parse(user.socialLinks) as Record<string, string>

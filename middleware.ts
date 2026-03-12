@@ -21,8 +21,8 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Already logged in with profile complete — send away from auth pages
-  if (isPublic && session?.profileSetup) {
+  // Already logged in with profile complete — send away from auth pages (but not API routes)
+  if (isPublic && !pathname.startsWith('/api/') && session?.profileSetup) {
     return NextResponse.redirect(new URL('/dashboard', req.url))
   }
 
