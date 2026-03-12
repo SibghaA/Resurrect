@@ -26,5 +26,26 @@ Next.js 14 (App Router) · TypeScript · Tailwind CSS · SQLite · Prisma · JWT
 - All changes via PR — no direct commits to `main` or `develop`
 - PRs require 1 review minimum; UI changes require a screenshot
 
+## Key Invariants
+
+These rules encode the security model and must never be violated regardless of feature context:
+
+- **File access is always derived from `milestone.status` on the server** — never from any client-side state, URL param, or user-supplied flag
+- **Handshake Agreement must be signed before any collaborator gains project file access** — the gate is the signed record in the DB, nothing else
+- **Flake Rate is calculated server-side and always displayed** — it cannot be suppressed, hidden, or overridden by any user action or client request
+- **Session tokens are verified on every protected API route** — never trust a client-supplied user ID; always read identity from `getSession()`
+- **Co-op Board listing creation requires verified project ownership** — `getProjectById(projectId, session.sub)` must return a result before a listing is created
+- **Zod validates all inputs at the boundary** — API route bodies, AI responses, and any external data must pass a Zod schema before use
+
+## Testing
+
+- **Framework**: Jest + ts-jest (`npm test`); coverage: `npm test -- --coverage`
+- **Structure**: tests live in `__tests__/` mirroring the source tree (`__tests__/lib/`, `__tests__/api/`)
+- **Pattern**: test behaviour not implementation — mock Prisma and external services, assert on HTTP response status and DB call arguments
+- **Coverage target**: ≥ 80% statements and lines across `lib/` and `app/api/` (currently at ~99%)
+- **Every new API route must cover**: 401 unauthenticated · 400 invalid input · 404 not found · happy path
+- **DB helpers**: assert on Prisma mock call arguments — no real database in unit tests
+- **AI services**: mock `generateCompletion` from `lib/ai/client.ts` — never call the Anthropic API in tests
+
 ## Product Summary
 Resurrect helps users revive abandoned personal projects — solo or with a collaborator. The Vault is each user's private workspace: they create projects, define milestones, and use an AI Micro-Task Engine to decompose a stalled project into 10-minute actionable tasks. When a user needs help, they post to the public Co-op Board with "I Have / I Need" skill tags. Interested collaborators sign a Handshake Agreement (covering IP, credit, and exit terms) before gaining access to any project files. File access is milestone-gated — collaborators unlock deeper project content only as they complete agreed milestones. Trust is enforced via a Flake Rate: a public metric showing the percentage of collaborations a user has abandoned post-Handshake. Never use words like "abandoned," "failed," or "overdue" in UI copy — use "paused" and "waiting for you." Always display the Flake Rate on profiles and listings; it cannot be hidden.
