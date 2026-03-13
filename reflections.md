@@ -2,9 +2,9 @@
 
 ## How the Rules File Bridges PRD to Implementation
 
-The most valuable thing `CLAUDE.md` did was lock in the right architecture before any product code was written. Without it, the AI defaulted to whatever stack felt lowest-friction for the feature description — which turned out to be Vite + plain JSX, no server, no database, and authentication faked entirely in `localStorage`. That's fine for a weekend demo, but it's the wrong call for Resurrect, where server-side milestone gating and a public Flake Rate are core trust mechanisms. You simply can't enforce "collaborators only unlock project files after completing a milestone" on the client.
+The most valuable thing `rules.md` did was lock in the right architecture before any product code was written. Without it, the AI defaulted to whatever stack felt lowest-friction for the feature description — which turned out to be Vite + plain JSX, no server, no database, and authentication faked entirely in `localStorage`. That's fine for a weekend demo, but it's the wrong call for Resurrect, where server-side milestone gating and a public Flake Rate are core trust mechanisms. You simply can't enforce "collaborators only unlock project files after completing a milestone" on the client.
 
-Naming the stack explicitly in `CLAUDE.md` — Next.js 14 App Router, TypeScript, Prisma, SQLite, JWT — meant the AI's first move was the right one, and every decision after that built on a solid foundation instead of fighting against a bad one.
+Naming the stack explicitly in `rules.md` — Next.js 14 App Router, TypeScript, Prisma, Postgres, JWT — meant the AI's first move was the right one, and every decision after that built on a solid foundation instead of fighting against a bad one.
 
 The rule with the clearest payoff was the 20-line controller limit paired with the `lib/` extraction requirement. The register route ended up at exactly 24 lines and does nothing except call `lib/db/user.ts`, `lib/auth/password.ts`, and `lib/auth/session.ts` in sequence. The AI didn't need to be hand-held through the separation — the constraint created enough pressure that it happened naturally. In the no-rules version, the same logic was all crammed into `AuthContext.jsx`: state, validation, storage, and routing in one file with no real boundaries.
 
@@ -32,7 +32,7 @@ The main gap: the board tracked code state, not AI session state. A prompt could
 
 ### Rules file changes
 
-The most important addition would be a dedicated PRD reference section — a condensed version of Resurrect's core concepts (Vault, Co-op Board, Flake Rate, Handshake, milestone gating) written the way the AI should understand them for implementation purposes. The current `Product Summary` in `CLAUDE.md` covers the concepts accurately but doesn't give implementation direction. A short "Key Invariants" block — e.g., "file access is always derived from `milestone.status` on the server, never from any client-side state" — would make the security model self-enforcing across prompts without needing to re-explain it each session.
+The most important addition would be a dedicated PRD reference section — a condensed version of Resurrect's core concepts (Vault, Co-op Board, Flake Rate, Handshake, milestone gating) written the way the AI should understand them for implementation purposes. The current `Product Summary` in `rules.md` covers the concepts accurately but doesn't give implementation direction. A short "Key Invariants" block — e.g., "file access is always derived from `milestone.status` on the server, never from any client-side state" — would make the security model self-enforcing across prompts without needing to re-explain it each session.
 
 A testing strategy section is also missing. Sprint 1 has no test files. For Sprint 2 features touching the Co-op Board and Handshake flows — more stateful, more user-to-user interaction — specifying a framework (Vitest + React Testing Library), a pattern (test behavior not implementation), and a coverage expectation would get tests generated as part of the initial output rather than treated as a follow-up task.
 
@@ -48,13 +48,13 @@ It would also be worth adding a `security` label and tagging anything that touch
 
 ## Sprint 2 Task Completion
 
-### ✅ Key Invariants block added to `CLAUDE.md`
+### ✅ Key Invariants block added to `rules.md`
 
 A dedicated `## Key Invariants` section was added above the Product Summary. It codifies six rules the AI must never violate regardless of feature context: server-side file access gating, Handshake-first collaborator access, Flake Rate always visible, session-derived identity only, ownership checks before listing creation, and Zod at every input boundary.
 
 The intent was to make the security model self-documenting and self-enforcing across sessions — the same goal as the 20-line controller rule in Sprint 1, but applied to product-level invariants rather than code structure. The format mirrors the Architecture section: short declarative bullets, one rule per line, no explanation of _why_ (that's the PRD's job). The assumption is that a rule the AI can parse in one line is more reliably followed than a paragraph it has to summarise first.
 
-### ✅ Testing strategy section added to `CLAUDE.md`
+### ✅ Testing strategy section added to `rules.md`
 
 A `## Testing` section was added specifying the framework (Jest + ts-jest), directory layout (`__tests__/` mirroring source), test pattern (mock Prisma and external services, assert on HTTP responses and DB call arguments), coverage target (≥ 80% statements and lines across `lib/` and `app/api/`), and mandatory coverage points per new route (401, 400, 404, happy path).
 
@@ -74,7 +74,7 @@ Also requires the `gh` CLI or the GitHub web UI. Create a `security` label (sugg
 
 The clearest change is that the rules file now has explicit answers to the two categories of question that Sprint 1 left open: _what are the security guarantees that must hold at all times_, and _what does done look like for any piece of code_.
 
-Sprint 1 produced correct architecture by constraining the AI's structural choices. Sprint 2's additions attempt to do the same for product correctness (Key Invariants) and quality assurance (Testing). The hypothesis is the same: a constraint written once in `CLAUDE.md` produces better output consistently than re-prompting the same rule per session.
+Sprint 1 produced correct architecture by constraining the AI's structural choices. Sprint 2's additions attempt to do the same for product correctness (Key Invariants) and quality assurance (Testing). The hypothesis is the same: a constraint written once in `rules.md` produces better output consistently than re-prompting the same rule per session.
 
 The test coverage result supports this. Writing the `## Testing` section before any tests existed would likely have produced 198 tests as initial output rather than as a follow-up task. That's the main lesson to carry into Sprint 3: specification in the rules file before implementation, not after.
 
@@ -83,27 +83,3 @@ The test coverage result supports this. Writing the `## Testing` section before 
 The rules file is still silent on UI behaviour. There is no guidance on component patterns, loading states beyond the one-liner in Code Standards, or how to handle optimistic updates. For Sprint 3 features — particularly anything with real-time collaboration signals or milestone progress — a `## UI Patterns` section covering skeleton conventions, error boundary placement, and the shape of server action responses would prevent the same kind of structural drift the Architecture section prevented in Sprint 1.
 
 The GitHub board should also track test coverage per issue, not just code completion. A simple "tests added: yes/no" checkbox in the Definition of Done would be enough to make coverage a condition of closing an issue rather than something audited separately after the sprint.
-
----
-
-## Sandeep's Sprint 2 Reflection & Task Completion
-
-To ensure equal contribution and maintain project standards alongside Sibgha's Sprint 2 completion tasks, I have finalized the remaining action items for my assigned features.
-
-### ✅ Test Coverage for Core Features
-While Sprint 1 established the architecture and rule set, Sprint 2 emphasized reliability. I added comprehensive unit and integration tests achieving 100% coverage for the **Handshake Agreement flow** (`app/api/collaborations/[id]/handshake` and `/sign`) and the **Flake Rate calculation** (`lib/flake-rate.ts`). 
-
-Testing the Handshake flow involved safely mocking the PDF generation (`generateHandshakePDF`), avoiding unnecessary local file I/O during test execution, and verifying that the `initiator` and `collaborator` signature state transitions are perfectly handled. For Flake Rate, tests rigorously assert the `isOverdueAbandoned` logic to handle the 2× deadline overdue rule objectively.
-
-### ✅ "Definition of Done" and Security Auditing
-I went back and added explicit "Definition of Done" criteria (including happy path / failure test cases and design references) for my Sprint 2 issues:
-- **#18:** Co-op Board search
-- **#15:** Skill matching feed
-- **#13:** Flake Rate
-- **#9:** Handshake Agreements
-- **#5:** AI Micro-Task Engine Rate Limiting
-
-Crucially, I applied the newly created `security` label (`#d73a4a`) to issues **#9** and **#13** because Handshake logic controls project gating, and Flake Rate visibility is an invariant trust metric. 
-
-### Key Takeaway for Sprint 3
-Working on the Handshake PDF generation and AI rate limits showcased that external side-effects (Anthropic, S3, PDF libs) are where the application is most brittle. My priority for Sprint 3 is to codify a fallback pattern in `CLAUDE.md` for *all* third-party dependencies, guaranteeing that Resurrect remains locally operable even when external services fail.
