@@ -4,7 +4,8 @@ import { getSession } from '@/lib/auth/session'
 import { getProjectById } from '@/lib/db/project'
 import { getActiveListingByProjectId } from '@/lib/db/coop-listing'
 import { format } from 'date-fns'
-import StatusManager, { statusBadgeColor } from '@/components/StatusManager'
+import StatusManager from '@/components/StatusManager'
+import { statusBadgeColor } from '@/lib/utils/status'
 import ContextSnapshot from '@/components/ContextSnapshot'
 import MicroTaskEngine from '@/components/MicroTaskEngine'
 
@@ -79,7 +80,11 @@ export default async function ProjectDetailPage({ params }: { params: { id: stri
 
         {/* Status Management */}
         <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Status</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">Status</h2>
+          <p className="text-sm text-gray-500 mb-4">
+            Keep this up to date so collaborators and the Co-op Board reflect the real state of your
+            project.
+          </p>
           <StatusManager projectId={project.id} currentStatus={project.status} />
         </div>
 

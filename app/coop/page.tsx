@@ -39,12 +39,17 @@ export default async function CoopBoardPage({
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-bold text-gray-900">Co-op Board</h1>
           <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline font-medium">
             Dashboard
           </Link>
         </div>
+        <p className="text-sm text-gray-500 mb-6">
+          A public board where project owners post what skills they have and what they need. Browse
+          listings to find a project to collaborate on, or post your own to find someone who can
+          help. All collaborations start with a signed Handshake Agreement.
+        </p>
 
         <Link
           href="/coop/new"

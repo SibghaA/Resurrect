@@ -6,7 +6,10 @@ interface FlakeRateBadgeProps {
 export default function FlakeRateBadge({ flakeRate, resolvedCount }: FlakeRateBadgeProps) {
   if (resolvedCount === 0) {
     return (
-      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+      <span
+        title="No completed collaborations yet — flake rate will appear once this user has resolved at least one"
+        className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500"
+      >
         New Member
       </span>
     )
@@ -21,6 +24,7 @@ export default function FlakeRateBadge({ flakeRate, resolvedCount }: FlakeRateBa
 
   return (
     <span
+      title="Percentage of collaborations this user left after signing a Handshake Agreement"
       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${color}`}
     >
       Flake Rate: {flakeRate.toFixed(1)}%

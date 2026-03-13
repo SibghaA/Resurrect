@@ -127,6 +127,9 @@ export default async function CoopListingDetailPage({ params }: { params: { id: 
                 {listing.user.flakeRate.toFixed(1)}%
               </span>
             </span>
+            <span className="text-gray-400 text-xs">
+              (% of collaborations abandoned after signing)
+            </span>
           </div>
         </div>
 
@@ -138,14 +141,26 @@ export default async function CoopListingDetailPage({ params }: { params: { id: 
         )}
 
         {!isOwner && session && (
-          <ExpressInterestForm
-            listingId={listing.id}
-            requiresApplication={listing.visibility === 'Application Required'}
-          />
+          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">Express Interest</h2>
+            <p className="text-sm text-gray-500 mb-4">
+              Let the project owner know you&apos;re interested. If they accept, you&apos;ll both
+              sign a Handshake Agreement covering IP, credit, and exit terms before you gain access
+              to project files.
+            </p>
+            <ExpressInterestForm
+              listingId={listing.id}
+              requiresApplication={listing.visibility === 'Application Required'}
+            />
+          </div>
         )}
 
         {!isOwner && !session && (
-          <div className="mt-6 text-center">
+          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 text-center">
+            <p className="text-sm text-gray-500 mb-4">
+              Log in to express interest in this project. You&apos;ll both sign a Handshake
+              Agreement before gaining access.
+            </p>
             <Link
               href="/auth/login"
               className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-indigo-700 transition"

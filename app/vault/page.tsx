@@ -24,12 +24,17 @@ export default async function VaultPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-bold text-gray-900">My Vault</h1>
           <Link href="/dashboard" className="text-sm text-indigo-600 hover:underline font-medium">
             Dashboard
           </Link>
         </div>
+        <p className="text-sm text-gray-500 mb-6">
+          Your private workspace for paused projects. Each project has a context snapshot to help
+          you pick up where you left off, milestones to track progress, and an AI engine to generate
+          bite-sized tasks.
+        </p>
 
         <Link
           href="/vault/new"
